@@ -17,11 +17,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.5"]
 
-# run.py is the only top-level module that exists at scaffold time; server.py and
-# rm_agent.py are added here in item 2. Tests import local modules via pytest pythonpath
-# (below), so this list only affects `pip install .`, not test collection.
+# Top-level backend modules. Tests import these via pytest pythonpath (below), so this
+# list only affects `pip install .`, not test collection.
 [tool.setuptools]
-py-modules = ["run"]
+py-modules = ["run", "server", "rm_agent"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

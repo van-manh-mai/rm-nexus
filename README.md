@@ -27,3 +27,11 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   `ruff` + `pytest` (backend) and `npm run lint` (frontend) on **push and pull_request**. Operating
   rules (data-authoritative boundary, offline floor, commit regimes) in `CLAUDE.md`.
   *Verified:* CI green on first push. *Spec:* plan.md Constitution gates I–IV.
+- **Item 2 — Backend: NBC agent + FastAPI SSE + tests.** `rm_agent.py` (tool-less `NBCAgent`,
+  APRA/bank system prompt, deterministic template fallback on no-key/failure). `server.py`
+  (`POST /api/rm-run`, SSE `GET /api/stream/{run_id}`, `GET /api/health`, CORS :3000;
+  `_rm_worker` ThreadPoolExecutor → thread-safe queue → JSON SSE frames, keepalive, per-run
+  timeout). Four key-free tests (`test_nbc_contract`, `test_boundary_no_tools`,
+  `test_no_key_fallback`, `test_sse_smoke`). *Verified:* 6/6 pytest green + live curl of
+  `/api/stream` yielding urgency-ordered `nbc` frames from posted data, then `done`.
+  *Spec:* contracts/nbc-agent.md, contracts/sse-contract.md.
