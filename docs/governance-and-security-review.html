@@ -1,0 +1,737 @@
+<style>
+  :root {
+    --paper: #f3f5f8;
+    --surface: #ffffff;
+    --surface-2: #fafbfc;
+    --ink: #121822;
+    --ink-soft: #45525f;
+    --ink-faint: #6b7787;
+    --hairline: #dbe1e9;
+    --hairline-strong: #c3cdd9;
+    --navy: #1d3a5f;
+    --navy-soft: #2e547f;
+    --good: #2e7d57;
+    --warn: #9a5d00;
+    --crit: #b23a3a;
+    --good-bg: #e7f1ec;
+    --warn-bg: #f6edd9;
+    --crit-bg: #f4e5e3;
+    --chip-bg: #eef2f7;
+
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --mono: "SF Mono", "Cascadia Mono", ui-monospace, "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+
+    --measure: 68ch;
+    --space: 1.6rem;
+    --radius: 4px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0e1420;
+      --surface: #161f2e;
+      --surface-2: #131b28;
+      --ink: #e5eaf1;
+      --ink-soft: #a7b4c4;
+      --ink-faint: #7c8998;
+      --hairline: #263346;
+      --hairline-strong: #33435c;
+      --navy: #82abdc;
+      --navy-soft: #a9c4e4;
+      --good: #63c295;
+      --warn: #e0b25a;
+      --crit: #e6897c;
+      --good-bg: #16281f;
+      --warn-bg: #2a2416;
+      --crit-bg: #2c1c1b;
+      --chip-bg: #1e293a;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --paper: #f3f5f8; --surface: #ffffff; --surface-2: #fafbfc;
+    --ink: #121822; --ink-soft: #45525f; --ink-faint: #6b7787;
+    --hairline: #dbe1e9; --hairline-strong: #c3cdd9;
+    --navy: #1d3a5f; --navy-soft: #2e547f;
+    --good: #2e7d57; --warn: #9a5d00; --crit: #b23a3a;
+    --good-bg: #e7f1ec; --warn-bg: #f6edd9; --crit-bg: #f4e5e3; --chip-bg: #eef2f7;
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e1420; --surface: #161f2e; --surface-2: #131b28;
+    --ink: #e5eaf1; --ink-soft: #a7b4c4; --ink-faint: #7c8998;
+    --hairline: #263346; --hairline-strong: #33435c;
+    --navy: #82abdc; --navy-soft: #a9c4e4;
+    --good: #63c295; --warn: #e0b25a; --crit: #e6897c;
+    --good-bg: #16281f; --warn-bg: #2a2416; --crit-bg: #2c1c1b; --chip-bg: #1e293a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 4rem) clamp(1.1rem, 4vw, 3rem) 5rem;
+  }
+
+  /* ---- Masthead ---- */
+  .masthead { border-bottom: 2px solid var(--navy); padding-bottom: 1.6rem; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin: 0 0 1rem;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 0.9rem;
+  }
+  .lead {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+    margin: 0;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.9rem 1.8rem;
+    margin-top: 1.8rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .meta div { display: flex; flex-direction: column; gap: 0.15rem; }
+  .meta dt {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .meta dd { margin: 0; font-size: 0.9rem; font-weight: 500; }
+
+  /* ---- Sections ---- */
+  section { margin-top: 3.2rem; }
+  .sec-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+  .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 1rem;
+  }
+  h3 { font-family: var(--serif); font-weight: 600; font-size: 1.2rem; margin: 0; }
+
+  p { max-width: var(--measure); }
+  section > p, section > .prose p { color: var(--ink); }
+  .muted { color: var(--ink-soft); }
+
+  a { color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--hairline-strong); }
+  a:hover { border-bottom-color: var(--navy); }
+  a:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; border-radius: 2px; }
+
+  code, .mono { font-family: var(--mono); font-size: 0.86em; }
+  .prose code {
+    background: var(--chip-bg);
+    padding: 0.08em 0.36em;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  /* ---- Scope caveat ---- */
+  .caveat {
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--warn);
+    border-radius: var(--radius);
+    padding: 1.3rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .caveat p { margin: 0; font-size: 0.92rem; color: var(--ink-soft); max-width: none; }
+  .caveat strong { color: var(--ink); }
+
+  /* ---- Control cards ---- */
+  .controls { display: flex; flex-direction: column; gap: 1.4rem; margin-top: 1.6rem; }
+  .control {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.7rem 1.8rem;
+  }
+  .control-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.2rem; }
+  .cid {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--surface);
+    background: var(--navy);
+    padding: 0.28rem 0.55rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .control-head h3 { line-height: 1.2; }
+
+  .block { margin-top: 1.15rem; }
+  .block:first-of-type { margin-top: 0; }
+  .block-label {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 0.35rem;
+  }
+  .block p { margin: 0; max-width: var(--measure); }
+
+  .evidence { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .evidence li {
+    position: relative;
+    padding-left: 1.2rem;
+    font-size: 0.93rem;
+    max-width: var(--measure);
+  }
+  .evidence li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0.6em;
+    width: 6px; height: 6px;
+    background: var(--good);
+    border-radius: 50%;
+  }
+  .evidence code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    background: var(--chip-bg);
+    padding: 0.05em 0.32em;
+    border-radius: 3px;
+  }
+
+  /* ---- Mapping chips ---- */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.3;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 3px;
+    padding: 0.24rem 0.5rem;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+  }
+  .chip b { color: var(--navy); font-weight: 600; }
+
+  .gap-note {
+    background: var(--surface-2);
+    border: 1px dashed var(--hairline-strong);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.1rem;
+  }
+  .gap-note p { margin: 0; font-size: 0.92rem; }
+
+  /* ---- Callout (why these three) ---- */
+  .why {
+    margin-top: 1.6rem;
+    padding: 1.4rem 1.6rem;
+    border: 1px solid var(--hairline);
+    border-top: 3px solid var(--navy);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .why h3 { margin-bottom: 0.6rem; }
+  .why p { max-width: none; }
+
+  /* ---- Tables ---- */
+  .table-scroll { overflow-x: auto; margin-top: 1.4rem; border: 1px solid var(--hairline); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 640px; }
+  thead th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--hairline-strong);
+    white-space: nowrap;
+  }
+  tbody td { padding: 0.8rem 0.9rem; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  td .fid { font-family: var(--mono); font-weight: 600; color: var(--navy); }
+  td strong { color: var(--ink); }
+  td code { font-family: var(--mono); font-size: 0.82em; color: var(--ink-soft); }
+
+  /* ---- Severity pills ---- */
+  .sev {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .sev-good { color: var(--good); background: var(--good-bg); }
+  .sev-low { color: var(--ink-soft); background: var(--chip-bg); }
+  .sev-med { color: var(--warn); background: var(--warn-bg); }
+  .sev-high { color: var(--crit); background: var(--crit-bg); }
+  .arrow { color: var(--ink-faint); margin: 0 0.15rem; font-family: var(--mono); font-size: 0.7rem; }
+
+  /* ---- Sources ---- */
+  .sources { list-style: none; margin: 1.2rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+  .sources li { padding-left: 1.1rem; position: relative; font-size: 0.92rem; }
+  .sources li::before { content: "§"; position: absolute; left: 0; color: var(--navy); font-family: var(--serif); }
+  .sources .src-title { display: block; font-weight: 500; }
+  .sources a { font-family: var(--mono); font-size: 0.8rem; word-break: break-all; border: none; color: var(--navy-soft); }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--hairline);
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+  footer p { max-width: none; }
+
+  @media (max-width: 600px) {
+    .control { padding: 1.3rem 1.2rem 1.5rem; }
+    .control-head { flex-wrap: wrap; gap: 0.6rem; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">APRA-aligned self-assessment · AI Letter · CPS 230 · CPS 234</p>
+    <h1>RM Nexus — Governance &amp; Security Review</h1>
+    <p class="lead">A design-level review of the "Next Best Conversation" RM dashboard: the three
+      AI governance controls most worth formalising, and an honest security read against APRA's
+      information-security expectations.</p>
+    <dl class="meta">
+      <div><dt>Subject</dt><dd>RM ClientNexus (this repository)</dd></div>
+      <div><dt>Date</dt><dd>2026-07-06</dd></div>
+      <div><dt>Status</dt><dd>Self-assessment — not an APRA submission</dd></div>
+      <div><dt>Data</dt><dd>Synthetic (demonstration only)</dd></div>
+    </dl>
+  </header>
+
+  <div class="caveat">
+    <p><strong>Scope &amp; honesty caveat.</strong> This reviews the thin vertical slice in this
+      repo, which runs on a <strong>bundled synthetic dataset</strong> — company names are real, all
+      financial data is fabricated for demonstration. There is no real customer information, no
+      production deployment, and no live data feed. It is a design-level self-assessment mapping the
+      solution's existing controls to APRA's expectations — <strong>not</strong> a claim of formal
+      compliance. APRA's framework is principle-based and technology/vendor-agnostic; the April 2026
+      AI Letter deliberately cites <strong>no prudential standard by number</strong>. Two things
+      below are therefore our interpretation, not APRA's wording: (a) the mapping of controls to
+      specific standard numbers, and (b) the AI-Letter <em>theme labels</em> (e.g.
+      "operational-resilience theme"), which group APRA's published findings rather than reproduce
+      its section numbering. Phrasing is paraphrased from APRA's published summaries unless shown as
+      a defined standard term.</p>
+  </div>
+
+  <section>
+    <p class="sec-label">01 · Executive summary</p>
+    <div class="prose">
+      <p>RM Nexus is an AI-assisted dashboard: a fixed book of 8 institutional clients renders from
+        an authoritative dataset, and an LLM overlays fresh "Next Best Conversation" (NBC) briefings
+        on demand. The decision that dominates its risk posture is that <strong>the AI narrates; it
+        never owns a number</strong>. That, plus a tested offline fallback and a human-gated change
+        process, means the solution already embodies the kind of <em>enforceable technical</em>
+        controls APRA's April 2026 AI Letter encourages entities to favour over policy-only
+        assurances.</p>
+      <p class="muted">Part A picks the top three AI governance controls — most relevant to this use
+        case and easiest to stand up — mapped to the APRA AI Letter and CPS 230. Part B is a
+        design-level security review mapped to CPS 234, with honest residual gaps. The three
+        controls are chosen because they are simultaneously the highest-relevance for an AI tool in a
+        regulated bank <em>and</em> already substantially implemented as code, so the cost to
+        formalise them is low.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">02 · Part A — Top 3 AI governance controls</p>
+    <div class="controls">
+
+      <article class="control">
+        <div class="control-head">
+          <span class="cid">C1</span>
+          <h3>AI Output Boundary — the model narrates, a human / system-of-record owns every figure</h3>
+        </div>
+        <div class="block">
+          <p class="block-label">What it is</p>
+          <p>The NBC agent is tool-less by construction: it cannot compute, round, look up, or alter
+            a financial figure. Every number the RM sees comes from the dataset, not the model; the
+            AI only produces advisory narrative prioritising what the RM already holds.</p>
+        </div>
+        <div class="block">
+          <p class="block-label">Why it matters here</p>
+          <p>The dominant AI risk in this use case is a hallucinated or subtly-altered figure
+            reaching an RM as if authoritative. This control removes that failure mode by design
+            rather than by asking a reviewer to catch it — an enforceable technical restriction, the
+            kind of preventative control APRA's letter encourages entities to favour over policy
+            reliance.</p>
+        </div>
+        <div class="block">
+          <p class="block-label">APRA mapping</p>
+          <div class="chips">
+            <span class="chip"><b>AI Letter</b> · Governance &amp; accountability</span>
+            <span class="chip"><b>AI Letter</b> · Operational resilience</span>
+            <span class="chip"><b>AI Letter</b> · Model risk &amp; data</span>
+            <span class="chip"><b>CPS 230</b> · Internal controls</span>
+          </div>
+        </div>
+        <div class="block">
+          <p class="block-label">In-repo evidence</p>
+          <ul class="evidence">
+            <li>Tool-less agent: <code>NBCAgent.tools = []</code> with no <code>tools=</code> argument
+              on the model call — <code>backend/rm_agent.py</code>; asserted by
+              <code>test_boundary_no_tools</code>.</li>
+            <li>The type system carries the boundary: <code>NBCItem</code> is all strings
+              (<code>urgency</code>, <code>action</code>, <code>text</code>, <code>acts[]</code>) with
+              no numeric field — <code>frontend/src/types/api.ts</code>. A number narrated in text is
+              never a value the UI trusts as data.</li>
+            <li>Every figure originates in the dataset <code>frontend/src/lib/rmClients.ts</code>.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <p class="block-label">Residual gap → easy how-to</p>
+          <div class="gap-note">
+            <p>The boundary is invisible to the end user. Add an explicit UI disclosure on
+              AI-generated briefings — <em>"AI-generated · advisory only · figures are
+              system-of-record"</em> — and record RM Nexus in an AI use-case inventory (the letter's
+              governance &amp; accountability theme) with this control noted.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="control">
+        <div class="control-head">
+          <span class="cid">C2</span>
+          <h3>Operational resilience — a credible fallback when the AI provider fails (the zero-LLM floor)</h3>
+        </div>
+        <div class="block">
+          <p class="block-label">What it is</p>
+          <p>The dashboard is fully usable with no AI at all. Each client always carries a static
+            "yesterday's briefing"; the live AI overlay degrades silently to that static briefing on
+            any API error, missing key, timeout, or malformed output. No crash, no broken state.</p>
+        </div>
+        <div class="block">
+          <p class="block-label">Why it matters here</p>
+          <p>Among the industry weaknesses APRA reports is that fallback processes are often not
+            established where AI supports critical operations. RM Nexus is the inverse: the critical
+            operation — an RM getting a dependable per-client briefing — continues within tolerance
+            when its single AI provider is unavailable. This is the strongest and lowest-cost control
+            to formalise because it is already built and tested.</p>
+        </div>
+        <div class="block">
+          <p class="block-label">APRA mapping</p>
+          <div class="chips">
+            <span class="chip"><b>AI Letter</b> · Operational resilience</span>
+            <span class="chip"><b>AI Letter</b> · Third-party / supplier</span>
+            <span class="chip"><b>CPS 230</b> · Pillar 2 · Critical-ops tolerance + BCP</span>
+            <span class="chip"><b>CPS 230</b> · Pillar 3 · Material service provider</span>
+          </div>
+        </div>
+        <div class="block">
+          <p class="block-label">In-repo evidence</p>
+          <ul class="evidence">
+            <li>Zero-LLM floor + silent degradation via the <code>__NBC_ERROR__</code> sentinel path —
+              <code>backend/server.py</code>; the front end leaves that card on its static briefing
+              with no error surfaced.</li>
+            <li>No-key fallback proven offline: <code>test_no_key_fallback</code> — the Anthropic
+              client is monkeypatched to fail if constructed; the template still returns.</li>
+            <li>Provider substitution lever already exists: <code>ANTHROPIC_MODEL</code> env
+              override.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <p class="block-label">Residual gap → easy how-to</p>
+          <div class="gap-note">
+            <p>The resilience is implicit. Write a one-paragraph critical-operation + tolerance
+              statement ("briefings remain available on static data; AI overlay is best-effort"), log
+              degradation events so silent fallback is observable (feeds C3 and CPS 234 monitoring),
+              and stand up a one-page material-service-provider register for Anthropic (criticality,
+              data sent, fallback, substitution / exit) — CPS 230 pillar 3 / the letter's third-party
+              theme.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="control">
+        <div class="control-head">
+          <span class="cid">C3</span>
+          <h3>AI change governance &amp; pre-deployment assurance</h3>
+        </div>
+        <div class="block">
+          <p class="block-label">What it is</p>
+          <p>No change reaches <code>main</code> without a pull request, passing CI, and a human
+            merge — enforced server-side and locally. Every PR that touches the UI carries browser
+            screenshots as assurance evidence before merge.</p>
+        </div>
+        <div class="block">
+          <p class="block-label">Why it matters here</p>
+          <p>APRA's letter reports assurance that lags deployment, and gaps in control libraries and
+            change control for AI. RM Nexus front-loads assurance: a change is evidenced (tests +
+            visual proof) and human-approved before it ships, with the agent explicitly barred from
+            merging its own work.</p>
+        </div>
+        <div class="block">
+          <p class="block-label">APRA mapping</p>
+          <div class="chips">
+            <span class="chip"><b>AI Letter</b> · Assurance &amp; change control</span>
+            <span class="chip"><b>AI Letter</b> · Governance &amp; accountability</span>
+            <span class="chip"><b>CPS 230</b> · Internal controls / change mgmt</span>
+          </div>
+        </div>
+        <div class="block">
+          <p class="block-label">In-repo evidence</p>
+          <ul class="evidence">
+            <li>Branch protection: GitHub ruleset <code>human-review-main</code> (PR required,
+              required <code>backend</code> / <code>frontend</code> checks, no bypass for anyone) —
+              verified via <code>gh api</code>.</li>
+            <li>Local belt to that suspenders: <code>.claude/hooks/git_guard.py</code> blocks direct
+              push / commit to <code>main</code>.</li>
+            <li>CI: <code>backend</code> (ruff + pytest) and <code>frontend</code> (lint) jobs; the
+              <code>visual</code> job runs Playwright against a cold, frontend-only build and posts
+              labelled screenshots inline on the PR as pre-deployment assurance evidence —
+              <code>.github/workflows/ci.yml</code>.</li>
+            <li>Spec-driven change trail under <code>specs/</code>.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <p class="block-label">Residual gap → easy how-to</p>
+          <div class="gap-note">
+            <p>Add a short control-to-evidence register (this document is its seed) and promote the
+              <code>visual</code> job to a required check in the ruleset so visual assurance is
+              merge-blocking, not merely informational.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="why">
+      <h3>Why these three (and not others)</h3>
+      <p class="muted">They score highest on <strong>relevance × ease</strong>: each addresses a
+        first-order AI risk for a regulated RM tool — fabricated figures, provider outage, ungoverned
+        change — and each is already implemented as an enforceable technical control, the kind APRA's
+        letter favours over policy-only measures, so formalising them is documentation rather than
+        new engineering. <strong>Honourable mentions</strong> (strong, slightly higher effort): a
+        material AI service-provider register for Anthropic (CPS 230 pillar 3 / the letter's
+        third-party theme — folded into C2's how-to); and model / data monitoring for drift and
+        output quality (the letter's model-risk theme), more meaningful once a live key and real
+        usage exist.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">03 · Part B — Security review (mapped to CPS 234)</p>
+    <p class="muted"><strong>Method.</strong> Design / architecture review of this repository — not a
+      penetration test or a review of a deployed system. CPS 234 requires info-security capability
+      commensurate with threats, controls proportionate to asset criticality and sensitivity,
+      systematic independent testing, third-party assessment, and incident notification to APRA
+      within 72 hours.</p>
+
+    <h3 style="margin-top:2rem;">Strengths — controls already present</h3>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Control</th><th>Evidence</th><th>Linkage</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="fid">S1</span></td>
+            <td><strong>No secrets in the repo.</strong> <code>.env</code> gitignored; only
+              <code>.env.example</code> committed; app needs no key to run.</td>
+            <td><code>.gitignore</code>, <code>.env.example</code>, <code>test_no_key_fallback</code></td>
+            <td>CPS 234 — credential protection</td>
+            <td><span class="sev sev-good">Present</span></td>
+          </tr>
+          <tr>
+            <td><span class="fid">S2</span></td>
+            <td><strong>Least-privilege CI token.</strong> The <code>visual</code> job's token is
+              scoped to <code>contents</code> / <code>pull-requests</code> only.</td>
+            <td><code>ci.yml</code> (<code>permissions:</code>)</td>
+            <td>CPS 234 — access control</td>
+            <td><span class="sev sev-good">Present</span></td>
+          </tr>
+          <tr>
+            <td><span class="fid">S3</span></td>
+            <td><strong>Blast-radius containment.</strong> The tool-less agent cannot act, so
+              prompt-injection cannot trigger side effects — only narrative text is at risk.</td>
+            <td><code>NBCAgent.tools = []</code></td>
+            <td>CPS 234 threat-proportionate; CPS 230 controls</td>
+            <td><span class="sev sev-good">Present</span></td>
+          </tr>
+          <tr>
+            <td><span class="fid">S4</span></td>
+            <td><strong>Restricted CORS.</strong> API accepts browser calls only from
+              <code>localhost:3000</code>.</td>
+            <td><code>backend/server.py</code></td>
+            <td>CPS 234 — interface controls</td>
+            <td><span class="sev sev-good">Present</span></td>
+          </tr>
+          <tr>
+            <td><span class="fid">S5</span></td>
+            <td><strong>Unguessable run identifiers.</strong> <code>run_id</code> is a
+              <code>uuid4().hex</code>; unknown ids return an error frame.</td>
+            <td><code>backend/server.py</code></td>
+            <td>CPS 234 — access control</td>
+            <td><span class="sev sev-good">Present</span></td>
+          </tr>
+          <tr>
+            <td><span class="fid">S6</span></td>
+            <td><strong>Low data sensitivity by design.</strong> Synthetic dataset only — no real
+              PII / financials.</td>
+            <td><code>frontend/src/lib/rmClients.ts</code></td>
+            <td>CPS 234 — asset classification</td>
+            <td><span class="sev sev-good">Present</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.4rem;">Residual gaps — recommendations, not implemented in this review</h3>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Finding</th><th>Severity (demo → prod)</th><th>Linkage</th><th>Recommendation</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="fid">G1</span></td>
+            <td><strong>No authentication / authorisation</strong> on the backend (single-user demo).</td>
+            <td><span class="sev sev-low">Low</span><span class="arrow">→</span><span class="sev sev-high">High</span></td>
+            <td>CPS 234 access control; FAR accountability</td>
+            <td>Add authN / authZ (SSO + role checks) before any real data.</td>
+          </tr>
+          <tr>
+            <td><span class="fid">G2</span></td>
+            <td><strong>No incident detection or APRA-notification path.</strong> Minimal logging;
+              silent degradation is invisible to operators.</td>
+            <td><span class="sev sev-low">Low</span><span class="arrow">→</span><span class="sev sev-high">High</span></td>
+            <td>CPS 234 <strong>72-hr notification</strong>; monitoring</td>
+            <td>Structured logging of failures / degradation + alerting + a notification runbook.</td>
+          </tr>
+          <tr>
+            <td><span class="fid">G3</span></td>
+            <td><strong>Public visual-evidence branch.</strong> CI pushes dashboard screenshots to the
+              public <code>pr-visual-evidence</code> branch — safe only because the data is synthetic.
+              With real data this is a data-exposure control failure.</td>
+            <td><span class="sev sev-low">N/A</span><span class="arrow">→</span><span class="sev sev-high">High</span></td>
+            <td>CPS 234 data classification &amp; protection</td>
+            <td>Gate screenshot publication on data being synthetic; for real data keep evidence in a
+              private store, not a public branch.</td>
+          </tr>
+          <tr>
+            <td><span class="fid">G4</span></td>
+            <td><strong>Prompt-injection can taint narrative.</strong> A crafted client profile could
+              influence the AI's wording.</td>
+            <td><span class="sev sev-low">Low</span></td>
+            <td>CPS 234 input handling; letter's model-risk theme</td>
+            <td>Mitigated today (output validated to 3 urgency-ordered items; figures never
+              model-sourced; human-in-loop; advisory framing). Add input / output guardrails if
+              exposure widens.</td>
+          </tr>
+          <tr>
+            <td><span class="fid">G5</span></td>
+            <td><strong>No rate limiting</strong> on <code>/api/rm-run</code> / <code>/api/stream</code>.</td>
+            <td><span class="sev sev-low">Low</span><span class="arrow">→</span><span class="sev sev-med">Med</span></td>
+            <td>CPS 234 availability; CPS 230 op-risk</td>
+            <td>Add rate limiting / quotas before exposure beyond localhost.</td>
+          </tr>
+          <tr>
+            <td><span class="fid">G6</span></td>
+            <td><strong>Third-party / supply-chain surface</strong> (Anthropic SDK, FastAPI, Next.js,
+              Playwright, GitHub Actions).</td>
+            <td><span class="sev sev-low">Low</span><span class="arrow">→</span><span class="sev sev-med">Med</span></td>
+            <td>CPS 234 third-party; CPS 230 service providers</td>
+            <td>Dependency pinning + scanning (e.g. Dependabot) and the C2 service-provider register.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="gap-note" style="margin-top:1.6rem;">
+      <p><strong>Assurance note (CPS 234 testing).</strong> The repo already runs systematic,
+        automated control tests on every push and PR — <code>backend</code> (ruff + pytest, incl. the
+        boundary and fallback guarantees), <code>frontend</code> (lint), and the <code>visual</code>
+        Playwright suite. This is the seed of the "regular testing of control effectiveness" CPS 234
+        expects, though CPS 234 also expects <em>functionally independent</em> testers — out of scope
+        for a solo demo.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">04 · Regulatory mapping appendix</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Control / finding</th><th>AI Letter theme</th><th>CPS 230</th><th>CPS 234</th><th>Other</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="fid">C1</span> AI output boundary</td><td>Governance; operational resilience; model risk</td><td>Internal controls</td><td>—</td><td>FAR</td></tr>
+          <tr><td><span class="fid">C2</span> Resilience / zero-LLM floor</td><td>Operational resilience; third-party</td><td>Pillar 2 tolerance + BCP; Pillar 3 service provider</td><td>Availability</td><td>CPG 235</td></tr>
+          <tr><td><span class="fid">C3</span> Change governance &amp; assurance</td><td>Assurance &amp; change control; governance</td><td>Internal controls / change mgmt</td><td>Systematic testing</td><td>—</td></tr>
+          <tr><td><span class="fid">S1</span> Secrets hygiene</td><td>—</td><td>—</td><td>Info-asset protection</td><td>—</td></tr>
+          <tr><td><span class="fid">S2</span> Least-privilege CI</td><td>Governance &amp; accountability</td><td>—</td><td>Access control</td><td>—</td></tr>
+          <tr><td><span class="fid">G2</span> Incident notification</td><td>Operational resilience; assurance</td><td>Op-risk incident mgmt</td><td><strong>72-hr notification</strong></td><td>—</td></tr>
+          <tr><td><span class="fid">G3</span> Public evidence branch</td><td>—</td><td>—</td><td>Data classification &amp; protection</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">05 · Sources</p>
+    <ul class="sources">
+      <li><span class="src-title">APRA — Letter to Industry on Artificial Intelligence (30 April 2026)</span>
+        <a href="https://www.apra.gov.au/apra-letter-to-industry-on-artificial-intelligence-ai">apra.gov.au/apra-letter-to-industry-on-artificial-intelligence-ai</a></li>
+      <li><span class="src-title">APRA — Calls for a step-change in AI-related risk management and governance (news, Apr 2026)</span>
+        <a href="https://www.apra.gov.au/news-and-publications/apra-calls-for-a-step-change-ai-related-risk-management-and-governance">apra.gov.au/news-and-publications/apra-calls-for-a-step-change-ai-related-risk-management-and-governance</a></li>
+      <li><span class="src-title">APRA — Prudential Standard CPS 230 Operational Risk Management (in force 1 July 2025)</span>
+        <a href="https://www.apra.gov.au/standards/cps-230">apra.gov.au/standards/cps-230</a></li>
+      <li><span class="src-title">APRA — Prudential Standard CPS 234 Information Security</span>
+        <a href="https://www.apra.gov.au/standards/cps-234">apra.gov.au/standards/cps-234</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Standard-to-control mappings and AI-Letter theme labels are this team's interpretation; APRA's
+      framework is principle-based and the AI Letter cites no standard by number. Prepared as a
+      self-assessment for the RM Nexus vertical slice — synthetic data, no production deployment.</p>
+  </footer>
+</div>
