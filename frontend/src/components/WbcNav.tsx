@@ -32,6 +32,14 @@ export function WbcNav({ title = 'Next Best Conversation' }: WbcNavProps) {
           {title}
         </h1>
         <div className="flex shrink-0 items-center gap-2">
+          <a
+            href="/rm-nexus-documentation.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+          >
+            Documentation ↗
+          </a>
           <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
             RM Book: 8 clients
           </span>
