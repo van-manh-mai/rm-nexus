@@ -43,9 +43,131 @@ jobs:
       - name: Lint
         run: npm run lint
 
+  visual:
+    name: visual (playwright)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push screenshots to the pr-visual-evidence branch
+      pull-requests: write # post the inline-image evidence comment
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browser
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      # Playwright's webServer builds + starts the FRONTEND ONLY (no backend, no key), so a green
+      # run is also evidence of the zero-live-LLM floor. Assertions gate the job; screenshots are
+      # captured as review evidence.
+      - name: Run visual e2e (build + start + test)
+        id: e2e
+        working-directory: frontend
+        run: npm run e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          if-no-files-found: ignore
+      - name: Publish screenshots inline on the PR
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          E2E_OUTCOME: ${{ steps.e2e.outcome }}
+        with:
+          script: |
+            const fs = require('fs')
+            const path = require('path')
+            const branch = 'pr-visual-evidence'
+            const pr = context.issue.number
+            const dir = 'frontend/e2e/screenshots'
+            const files = fs.existsSync(dir)
+              ? fs.readdirSync(dir).filter((f) => f.endsWith('.png')).sort()
+              : []
+            if (files.length === 0) {
+              core.warning('No screenshots produced; skipping evidence publish.')
+              return
+            }
+            // Ensure a dedicated ORPHAN evidence branch exists (universal empty-tree SHA),
+            // so screenshot blobs never touch main.
+            try {
+              await github.rest.git.getRef({ ...context.repo, ref: `heads/${branch}` })
+            } catch {
+              const commit = await github.rest.git.createCommit({
+                ...context.repo,
+                message: 'init pr-visual-evidence (orphan)',
+                tree: '4b825dc642cb6eb9a060e54bf8d69288fbee4904',
+                parents: [],
+              })
+              await github.rest.git.createRef({
+                ...context.repo,
+                ref: `refs/heads/${branch}`,
+                sha: commit.data.sha,
+              })
+            }
+            // Upload each screenshot under pr-<n>/ (update in place on re-runs).
+            for (const f of files) {
+              const filePath = `pr-${pr}/${f}`
+              const content = fs.readFileSync(path.join(dir, f)).toString('base64')
+              let sha
+              try {
+                const cur = await github.rest.repos.getContent({
+                  ...context.repo,
+                  path: filePath,
+                  ref: branch,
+                })
+                sha = cur.data.sha
+              } catch {}
+              await github.rest.repos.createOrUpdateFileContents({
+                ...context.repo,
+                path: filePath,
+                branch,
+                message: `visual evidence PR #${pr}: ${f}`,
+                content,
+                sha,
+              })
+            }
+            // Upsert one marked comment with the screenshots embedded inline.
+            const rawBase = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branch}/pr-${pr}`
+            const v = context.sha.slice(0, 7)
+            const outcome = process.env.E2E_OUTCOME || 'unknown'
+            const header = outcome === 'success' ? '✅' : '⚠️'
+            const marker = '<!-- visual-evidence -->'
+            const body = [
+              marker,
+              `### ${header} Visual verification — spec 002 (Richer Client Tiles)`,
+              `Playwright drove a real Chromium against a cold, **frontend-only** build (no backend, no API key — a green run also demonstrates the zero-live-LLM floor). e2e result: **${outcome}**.`,
+              '',
+              ...files.map(
+                (f) => `**${f.replace(/\.png$/, '')}**\n\n![${f}](${rawBase}/${f}?v=${v})`,
+              ),
+            ].join('\n')
+            const comments = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: pr,
+            })
+            const existing = comments.data.find((c) => c.body && c.body.includes(marker))
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existing.id,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: pr, body })
+            }
+
   pr-comment:
     name: PR status comment
-    needs: [backend, frontend]
+    needs: [backend, frontend, visual]
     if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -56,11 +178,13 @@ jobs:
           script: |
             const backend = '${{ needs.backend.result }}'
             const frontend = '${{ needs.frontend.result }}'
+            const visual = '${{ needs.visual.result }}'
             const icon = (r) => (r === 'success' ? '✅' : '❌')
             const body = [
               '### CI result',
               `${icon(backend)} backend (pytest + ruff): ${backend}`,
               `${icon(frontend)} frontend (lint): ${frontend}`,
+              `${icon(visual)} visual (playwright): ${visual}`,
             ].join('\n')
             github.rest.issues.createComment({
               owner: context.repo.owner,

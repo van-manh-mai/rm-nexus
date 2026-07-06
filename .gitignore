@@ -31,6 +31,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# ── Playwright (frontend/) ───────────────────────────────────────────────────
+# Screenshots are published to the pr-visual-evidence branch by CI, not committed here.
+test-results/
+playwright-report/
+playwright/.cache/
+frontend/e2e/screenshots/
+
 # ── OS / editor ──────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
