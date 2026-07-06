@@ -31,8 +31,14 @@ an LLM, streamed over SSE. Company names are real; **all financial data is synth
   (forces UTF-8 stdout/stderr before any import — Windows cp1252 otherwise crashes on model output).
   Default model `claude-haiku-4-5-20251001`; override via `ANTHROPIC_MODEL`.
 - `frontend/` — Next.js 16, React 19, TypeScript, Tailwind (no Cloudscape). `npm run dev` on :3000.
+- `frontend/e2e/` — Playwright visual verification (`playwright.config.ts` + `spec-002-tiles.spec.ts`).
+  Boots the **frontend only** (no backend, no key), so a green run also proves the zero-LLM floor.
+  Excluded from the app `tsconfig` (tooling, transpiled by Playwright). Run headed via `/verify`.
 - Interface contracts (TS types, SSE frames, NBC agent shape) live in `specs/001-rm-clientnexus/contracts/`
   and are the shared source of truth.
+- CI jobs: `backend` (ruff+pytest), `frontend` (lint), `visual` (Playwright → inline screenshots
+  on the PR via the orphan `pr-visual-evidence` branch), `pr-comment` (status comment). The
+  `visual` job is informational, not a required check.
 
 ## Build regimes
 

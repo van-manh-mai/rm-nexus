@@ -59,7 +59,7 @@ export function ClientDetail({
   const productEntries = Object.entries(client.productValues)
 
   return (
-    <div className="fixed inset-0 z-30 flex flex-col bg-white">
+    <div data-testid="client-detail" className="fixed inset-0 z-30 flex flex-col bg-white">
       <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
         <div>
           <h2 className="text-lg font-semibold text-zinc-900">{client.name}</h2>
@@ -194,7 +194,7 @@ export function ClientDetail({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-              Next Best Conversation
+              Aussie Bank Institutional Clients Liquidity Intelligence with Next Best Conversation 
             </h3>
             <button
               type="button"

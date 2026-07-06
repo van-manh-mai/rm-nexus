@@ -25,7 +25,7 @@ export function WbcNav({ title = 'Next Best Conversation' }: WbcNavProps) {
           WBC
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold text-zinc-900">LiquidNexus</span>
+          <span className="text-sm font-semibold text-zinc-900">RM Nexus</span>
           <span className="text-[11px] text-zinc-500">Aussie Bank</span>
         </div>
         <h1 className="flex-1 text-center text-base font-semibold text-zinc-900 sm:text-lg">

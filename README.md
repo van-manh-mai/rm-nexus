@@ -72,3 +72,15 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   merges (the agent does not merge). *Verified:* 9-case unit test of `git_guard.py` covering
   block/allow paths and two false-positive regressions (literal mentions, piped JSON fixtures).
   *Spec:* specs/001-rm-clientnexus/process.md.
+- **Item 7 — Richer client tiles + browser visual verification (governed feature).** Each summary
+  tile now shows a 30-day cash-flow sparkline (reusing `Sparkline` + dataset `cashFlows`), is a
+  whole-tile click target with a hover-lift and a persistent "View details ›" hint, and carries a
+  light alert-level tint (critical=red / high=amber / medium=blue / none=green). Presentation only:
+  every figure and colour comes from the dataset; inner NBC controls `stopPropagation` so they
+  don't open the detail view. New Playwright suite (`frontend/e2e/spec-002-tiles.spec.ts`) runs a
+  real Chromium against a cold **frontend-only** build (no backend/key — so a green run also proves
+  the zero-LLM floor), asserting each spec-002 criterion and screenshotting it. A CI `visual` job
+  publishes those screenshots inline onto the PR (via an orphan `pr-visual-evidence` branch) for
+  human review; the `/verify` skill runs the same suite headed locally. *Verified:* `tsc` + ESLint
+  + `next build` clean; 5/5 e2e scenarios green locally with screenshots confirmed; delivered by
+  PR under Stage B. *Spec:* specs/002-richer-client-tiles/spec.md.

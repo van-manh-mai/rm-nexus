@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { Sparkline } from '@/components/Sparkline'
 import type { ClientBriefing, NBCItem, RMClient } from '@/types/api'
 
 const ALERT_STYLES: Record<RMClient['alertLevel'], string> = {
@@ -9,6 +10,16 @@ const ALERT_STYLES: Record<RMClient['alertLevel'], string> = {
   high: 'bg-amber-100 text-amber-800 border border-amber-200',
   medium: 'bg-blue-100 text-blue-800 border border-blue-200',
   none: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
+}
+
+// Whole-tile colour grade (spec 002 FR-206/207): a LIGHT wash keyed to alert level so the book
+// is scannable by urgency at a glance. Kept light enough to preserve text contrast; the textual
+// alert chip above is retained so colour is never the sole signal.
+const TINT_STYLES: Record<RMClient['alertLevel'], string> = {
+  critical: 'bg-red-50 border-red-200',
+  high: 'bg-amber-50 border-amber-200',
+  medium: 'bg-blue-50 border-blue-200',
+  none: 'bg-emerald-50 border-emerald-200',
 }
 
 const URGENCY_STYLES: Record<NBCItem['urgency'], string> = {
@@ -42,17 +53,31 @@ export function NBCCard({ client, liveBriefing, isGenerating, onSelect }: NBCCar
   const items = liveBriefing?.next_best ?? client.nextBest
   const summary = liveBriefing?.summary ?? client.alertText
 
+  // The whole tile is the click target (opens the detail view). Keyboard-operable per FR-204.
+  const open = () => onSelect?.()
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      open()
+    }
+  }
+
   return (
-    <div className="flex flex-col rounded-lg border border-zinc-200 bg-white shadow-sm">
-      <button
-        type="button"
-        onClick={onSelect}
-        className="flex items-start justify-between gap-2 px-4 pt-4 text-left"
-      >
+    <div
+      data-testid="client-tile"
+      data-alert-level={client.alertLevel}
+      role="button"
+      tabIndex={0}
+      onClick={open}
+      onKeyDown={onKeyDown}
+      aria-label={`Open ${client.name} details`}
+      className={`flex cursor-pointer flex-col rounded-lg border shadow-sm transition duration-150 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 ${TINT_STYLES[client.alertLevel]}`}
+    >
+      <div className="flex items-start justify-between gap-2 px-4 pt-4">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-zinc-900">{client.name}</h3>
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-600">
+            <span className="rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-medium text-zinc-600">
               {client.tier}
             </span>
           </div>
@@ -63,7 +88,7 @@ export function NBCCard({ client, liveBriefing, isGenerating, onSelect }: NBCCar
         >
           {client.alertLevel === 'none' ? 'No alert' : client.alertLevel}
         </span>
-      </button>
+      </div>
 
       <div className="mt-3 grid grid-cols-2 gap-3 px-4">
         <Metric
@@ -92,27 +117,45 @@ export function NBCCard({ client, liveBriefing, isGenerating, onSelect }: NBCCar
         />
       </div>
 
+      <div className="mt-3 px-4">
+        <p className="text-[10px] uppercase tracking-wide text-zinc-400">30-day cash flow</p>
+        <Sparkline
+          values={client.cashFlows}
+          width={260}
+          height={36}
+          className="mt-1 w-full text-zinc-500"
+        />
+      </div>
+
       <div className="mt-3 flex flex-wrap gap-1 px-4">
         {client.products.map((p) => (
           <span
             key={p}
-            className="rounded bg-zinc-50 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500"
+            className="rounded bg-white/60 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500"
           >
             {p}
           </span>
         ))}
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-zinc-100 px-4 py-2 text-[11px] text-zinc-500">
-        <span>{client.rm}</span>
-        <span>Last contact {client.lastContact}</span>
+      <div className="mt-3 flex items-center justify-between border-t border-black/5 px-4 py-2 text-[11px] text-zinc-500">
+        <span>
+          {client.rm} · Last contact {client.lastContact}
+        </span>
+        <span className="font-medium text-zinc-700">View details ›</span>
       </div>
 
-      <div className="border-t border-zinc-100 px-4 py-3">
+      {/* Interactive briefing sub-region: clicks here act on their own controls and MUST NOT
+          bubble up to open the detail view (spec 002 FR-205 / SC-203). */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="cursor-default border-t border-black/5 px-4 py-3"
+      >
         {isGenerating && <p className="text-xs text-zinc-400 italic">Generating fresh briefing…</p>}
         <p className="text-xs text-zinc-600">{summary}</p>
         <button
           type="button"
+          data-testid="nbc-toggle"
           onClick={(e) => {
             e.stopPropagation()
             setExpanded((v) => !v)
@@ -124,7 +167,7 @@ export function NBCCard({ client, liveBriefing, isGenerating, onSelect }: NBCCar
         {expanded && (
           <ul className="mt-2 flex flex-col gap-2">
             {items.map((item, i) => (
-              <li key={i} className="rounded border border-zinc-100 p-2">
+              <li key={i} className="rounded border border-black/5 bg-white/50 p-2">
                 <div className="flex items-center gap-2">
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase ${URGENCY_STYLES[item.urgency]}`}
