@@ -11,8 +11,86 @@ per-client over Server-Sent Events. Any AI failure degrades silently to the stat
 **All financial figures come from the client dataset — never from the model. The LLM only
 narrates.** Company names are real; **all financial data is synthetic and for demonstration only.**
 
-> Full Frame / Design / Build / Verify / Document write-up is assembled in item 8. This file grows a
-> Features log as each slice lands.
+---
+
+## Frame · Design · Build · Verify · Document
+
+### Frame
+
+The user is an **institutional banking Relationship Manager** at an APRA-regulated Australian bank,
+managing a book of large institutional clients and needing a fast, dependable read on *what to talk
+to each client about next*. The hard part isn't the AI — it's making an AI feature **credible
+inside a regulated enterprise**. Three non-negotiables framed everything:
+
+1. **Data is authoritative; the LLM only narrates.** Every figure comes from the client dataset,
+   never the model — no hallucinated numbers reaching an RM as fact.
+2. **Zero-live-LLM floor.** The tool must work fully with no API key and survive any AI outage —
+   the AI is an *overlay*, not a dependency.
+3. **Auditable, incremental delivery.** Small reviewable commits, a spec trail, and a human in the
+   loop — not a black-box drop.
+
+### Design
+
+- **Data-authoritative boundary, enforced two ways.** The NBC agent is *tool-less by construction*
+  (`NBCAgent.tools = []`) so it structurally cannot compute or alter a figure; and `NBCItem` is
+  **all strings** (no numeric field), so a number the model narrates is never trusted as UI data.
+  The two halves together mean no model output is ever a value the dashboard renders.
+- **Zero-LLM floor + silent degradation.** Each client carries a static "yesterday's briefing";
+  the live overlay degrades to it on any error via the `__NBC_ERROR__` path — no crash, no broken
+  state.
+- **Progressive reveal over SSE.** `POST /api/rm-run` → per-client `nbc` frames streamed over
+  `GET /api/stream/{run_id}`. A worker thread parallelises the blocking SDK calls and hands off to
+  the async endpoint through a stdlib `queue.Queue`, whose get-timeout doubles as the ~10s
+  keepalive tick. The browser connects **direct to :8000** to avoid dev-proxy SSE buffering.
+- **Governed change process.** A two-regime git workflow (below) plus a `git_guard` PreToolUse
+  hook and a no-bypass GitHub ruleset keep `main` human-gated; browser screenshots are attached to
+  every UI PR as pre-deployment assurance.
+
+### Build
+
+Delivered as **8 numbered, checkpointed items** (see
+[`specs/001-rm-clientnexus/process.md`](specs/001-rm-clientnexus/process.md)) in two regimes:
+**Stage A** (items 1–5) committed directly to `main`; **Stage B** (items 6–8) went through
+`branch → push → PR → CI → human approval → human merge` — the agent never merges. Every item
+added a Features-log entry (below) and updated `CLAUDE.md` when a module appeared. Stack:
+
+- **Backend:** Python 3.10+, FastAPI, `anthropic` SDK (no AWS/Bedrock). `python backend/run.py` → :8000.
+- **Frontend:** Next.js 16, React 19, TypeScript, Tailwind (no Cloudscape). `npm run dev` in `frontend/` → :3000.
+- Default model `claude-haiku-4-5-20251001`; override via `ANTHROPIC_MODEL`.
+
+**Run it:** `python backend/run.py` and (in `frontend/`) `npm run dev`, then open
+`http://localhost:3000/rm`. No API key needed — that's the point.
+
+### Verify
+
+- **Offline, key-free backend tests (6/6):** the guarantees are test-guarded and network-free —
+  tool-less boundary (`test_boundary_no_tools`), no-key template + no-network (`test_no_key_fallback`),
+  live JSON contract via a mocked client (`test_nbc_contract`), and an end-to-end SSE smoke
+  (`test_sse_smoke`).
+- **CI on push *and* pull_request:** `backend` (ruff + pytest), `frontend` (lint), `visual`
+  (Playwright), and a `pr-comment` status job.
+- **Browser visual verification:** a Playwright suite drives real Chromium against a cold,
+  frontend-only build and posts labelled screenshots inline on each PR (via an orphan
+  `pr-visual-evidence` branch) as human-checkable assurance. Run headed locally with `/verify`.
+- **Cold walk-away check (2026-07-06):** from a fresh, key-free start, `/rm` renders all 8 client
+  cards — metrics, sparklines, alert tints, static briefings — with **zero backend/AI requests on
+  load** (verified in the browser network panel). The dashboard is fully usable with no AI service.
+- **Independent reviews:** a governance & security review
+  ([`docs/governance-and-security-review.md`](docs/governance-and-security-review.md)) and an
+  engineering code & security review
+  ([`specs/003-code-security-review/spec.md`](specs/003-code-security-review/spec.md)).
+
+### Document
+
+- **Specs & contracts:** [`specs/001-rm-clientnexus/`](specs/001-rm-clientnexus/) (product spec,
+  TS/SSE/agent contracts, data model, quickstart, delivery process) and
+  [`specs/002-richer-client-tiles/spec.md`](specs/002-richer-client-tiles/spec.md).
+- **Responsible-AI & regulatory:** [`docs/governance-and-security-review.md`](docs/governance-and-security-review.md)
+  — top-3 controls mapped to the APRA AI Letter / CPS 230, plus a CPS 234 security review.
+- **Known-issues register:** [`specs/003-code-security-review/spec.md`](specs/003-code-security-review/spec.md).
+- **Agent operating rules:** [`CLAUDE.md`](CLAUDE.md). **Build trail:** the Features log below.
+
+---
 
 ## Stack
 
@@ -102,3 +180,11 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   nesting, test-coverage gaps, and `0.0.0.0`-bind-with-no-auth. Balanced with strengths (tool-less
   boundary, tested degradation, secrets hygiene). *Verified:* every citation re-read against source;
   advisor independent pass (caught + fixed a C7 mis-statement); self-review caveat stated.
+- **Item 8 — Verify + document (finalised).** Adds the top-of-README **Frame / Design / Build /
+  Verify / Document** write-up — the assessor-facing spine that pulls the specs, controls and
+  verification together. Closes the two remaining item-8 parts: a **cold walk-away check**
+  (fresh key-free start → `/rm` renders all 8 cards from the dataset with **zero backend/AI
+  requests on load**, confirmed in the browser network panel) and a **green-suite** gate (backend
+  ruff + pytest 6/6, frontend lint + `tsc` clean, e2e 5/5). Docs only — no code changed.
+  *Verified:* cold walk-away passed 2026-07-06; full local suite green. *Spec:*
+  specs/001-rm-clientnexus/process.md (item 8).
