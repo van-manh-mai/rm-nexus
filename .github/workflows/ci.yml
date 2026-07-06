@@ -42,3 +42,29 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+
+  pr-comment:
+    name: PR status comment
+    needs: [backend, frontend]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const backend = '${{ needs.backend.result }}'
+            const frontend = '${{ needs.frontend.result }}'
+            const icon = (r) => (r === 'success' ? '✅' : '❌')
+            const body = [
+              '### CI result',
+              `${icon(backend)} backend (pytest + ruff): ${backend}`,
+              `${icon(frontend)} frontend (lint): ${frontend}`,
+            ].join('\n')
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            })
