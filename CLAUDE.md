@@ -37,8 +37,12 @@ an LLM, streamed over SSE. Company names are real; **all financial data is synth
 ## Build regimes
 
 - **Stage A (items 1–5):** small, atomic commits direct to `main`.
-- **Stage B (items 6+):** branch protection is active — never push or merge to `main` directly.
-  Always branch → push → open PR → wait for CI → wait for human approval. A human merges, not the agent.
+- **Stage B (items 6+, active):** GitHub ruleset `human-review-main` protects `main` (required
+  PR + 1 approval, required `backend`/`frontend` status checks, no bypass for anyone). Never
+  push or merge to `main` directly. Always branch → push → open PR → wait for CI → wait for
+  human approval. A human merges, not the agent. A `.claude/settings.json` `PreToolUse` hook
+  (`.claude/hooks/git_guard.py`) also blocks direct push/commit to `main` at the session level —
+  a local belt to GitHub's authoritative suspenders.
 
 ## Conventions
 

@@ -61,3 +61,14 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   (SC-002) via real `/api/rm-run` → `/api/stream` calls, card expand and `ClientDetail` overlay
   both render exactly 3 urgency-ordered items, no console errors. *Spec:* quickstart.md
   validation scenarios, sse-contract.md.
+- **Item 6 — Governance retrofit (Stage B begins).** GitHub ruleset `human-review-main` now
+  protects `main` (required PR + 1 approval, required `backend`/`frontend` checks, no bypass —
+  verified via `gh api repos/.../rulesets`). `.claude/settings.json` wires a `PreToolUse` hook
+  (`.claude/hooks/git_guard.py`, stdlib-only, no `jq`) that blocks any direct `git push`/`commit`
+  to `main` at the session level as a belt to GitHub's suspenders; it tokenizes with `shlex`
+  so it only matches real git invocations, not text that merely mentions one inside a quoted
+  string. CI gained a `pr-comment` job that posts a ✅/❌ status comment on the PR. This item is
+  itself the first PR under the new regime: branch → push → PR → CI → human approval → human
+  merges (the agent does not merge). *Verified:* 9-case unit test of `git_guard.py` covering
+  block/allow paths and two false-positive regressions (literal mentions, piped JSON fixtures).
+  *Spec:* specs/001-rm-clientnexus/process.md.
