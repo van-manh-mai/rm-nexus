@@ -84,3 +84,14 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   human review; the `/verify` skill runs the same suite headed locally. *Verified:* `tsc` + ESLint
   + `next build` clean; 5/5 e2e scenarios green locally with screenshots confirmed; delivered by
   PR under Stage B. *Spec:* specs/002-richer-client-tiles/spec.md.
+- **Item 8 — Governance & security review (Responsible-AI controls named).**
+  `docs/governance-and-security-review.md` (+ a self-contained `.html` also published as a
+  shareable Artifact) reviews the solution against APRA's principle-based framework: it picks the
+  **top 3 AI governance controls** (AI output boundary; operational resilience / zero-LLM floor;
+  change governance & pre-deployment assurance), mapping each to the **APRA AI Letter (30 Apr 2026)**
+  and **CPS 230**, with in-repo evidence, residual gap and an easy how-to; then a **CPS 234**
+  security review (6 strengths, 6 residual gaps incl. the public-evidence-branch data-exposure
+  finding). Analysis only — no code changed. Every code/test/ruleset citation grep-verified; every
+  regulatory claim cited to an APRA primary source (theme labels flagged as our groupings, not
+  APRA section numbers). *Verified:* anchors resolve; advisor-reviewed for regulatory calibration.
+  *Sources:* APRA AI Letter, CPS 230, CPS 234.
