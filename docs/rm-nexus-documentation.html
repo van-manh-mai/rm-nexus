@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RM Nexus — Documentation</title>
+  <style>
+    :root {
+      --paper: #f3f5f8; --surface: #ffffff; --surface-2: #fafbfc;
+      --ink: #121822; --ink-soft: #45525f; --ink-faint: #6b7787;
+      --hairline: #dbe1e9; --hairline-strong: #c3cdd9;
+      --navy: #1d3a5f; --navy-soft: #2e547f;
+      --good: #2e7d57; --warn: #9a5d00; --crit: #b23a3a;
+      --good-bg: #e7f1ec; --warn-bg: #f6edd9; --crit-bg: #f4e5e3; --chip-bg: #eef2f7;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+      --mono: "SF Mono", "Cascadia Mono", ui-monospace, "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+      --radius: 4px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #0e1420; --surface: #161f2e; --surface-2: #131b28;
+        --ink: #e5eaf1; --ink-soft: #a7b4c4; --ink-faint: #7c8998;
+        --hairline: #263346; --hairline-strong: #33435c;
+        --navy: #82abdc; --navy-soft: #a9c4e4;
+        --good: #63c295; --warn: #e0b25a; --crit: #e6897c;
+        --good-bg: #16281f; --warn-bg: #2a2416; --crit-bg: #2c1c1b; --chip-bg: #1e293a;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body {
+      margin: 0; background: var(--paper); color: var(--ink);
+      font-family: var(--sans); font-size: 16.5px; line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--hairline-strong); }
+    a:hover { border-bottom-color: var(--navy); }
+    a:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; border-radius: 2px; }
+    code { font-family: var(--mono); font-size: 0.86em; background: var(--chip-bg); padding: 0.08em 0.36em; border-radius: 3px; }
+    pre { margin: 0; }
+    pre code {
+      display: block; background: var(--surface-2); border: 1px solid var(--hairline);
+      border-radius: var(--radius); padding: 0.95rem 1.1rem; overflow-x: auto;
+      font-size: 0.82rem; line-height: 1.7; color: var(--ink);
+    }
+
+    .layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr; }
+    @media (min-width: 960px) { .layout { grid-template-columns: 240px 1fr; gap: 2.5rem; } }
+
+    /* TOC */
+    .toc { display: none; }
+    @media (min-width: 960px) {
+      .toc {
+        display: block; position: sticky; top: 0; align-self: start; height: 100vh;
+        overflow-y: auto; padding: 2.5rem 0 2rem 1.5rem; border-right: 1px solid var(--hairline);
+      }
+      .toc .brand { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; margin-bottom: 0.2rem; }
+      .toc .brand-sub { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); margin-bottom: 1.4rem; }
+      .toc nav { display: flex; flex-direction: column; gap: 0.1rem; }
+      .toc a { display: block; padding: 0.28rem 0; font-size: 0.85rem; color: var(--ink-soft); border: none; }
+      .toc a:hover { color: var(--navy); }
+      .toc .toc-num { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-faint); margin-right: 0.5rem; }
+    }
+
+    main { padding: clamp(1.4rem, 4vw, 3.2rem) clamp(1.1rem, 4vw, 2.6rem) 5rem; min-width: 0; }
+
+    .masthead { border-bottom: 2px solid var(--navy); padding-bottom: 1.5rem; margin-bottom: 2.5rem; }
+    .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--navy); margin: 0 0 0.9rem; }
+    h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.08; letter-spacing: -0.01em; margin: 0 0 0.8rem; text-wrap: balance; }
+    .lead { font-size: 1.1rem; color: var(--ink-soft); max-width: 60ch; margin: 0; }
+
+    section { scroll-margin-top: 1.5rem; margin-top: 3rem; }
+    .sec-label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--navy); display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
+    .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+    h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 1rem; text-wrap: balance; }
+    h3 { font-family: var(--serif); font-weight: 600; font-size: 1.2rem; margin: 1.8rem 0 0.6rem; }
+    p { max-width: 66ch; }
+    ul, ol { max-width: 66ch; padding-left: 1.3rem; }
+    li { margin: 0.35rem 0; }
+    .muted { color: var(--ink-soft); }
+
+    .callout { background: var(--surface-2); border: 1px solid var(--hairline); border-left: 3px solid var(--navy); border-radius: var(--radius); padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .callout.warn { border-left-color: var(--warn); }
+    .callout.good { border-left-color: var(--good); }
+    .callout p { margin: 0; max-width: none; font-size: 0.95rem; }
+    .callout strong { color: var(--ink); }
+
+    .card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 1.3rem 1.5rem; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 1.2rem; }
+    .grid h3 { margin: 0 0 0.4rem; font-size: 1.02rem; }
+    .grid p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+
+    .steps { counter-reset: step; list-style: none; padding: 0; }
+    .steps > li { counter-increment: step; position: relative; padding-left: 2.6rem; margin: 1.1rem 0; }
+    .steps > li::before { content: counter(step); position: absolute; left: 0; top: -0.1rem; width: 1.7rem; height: 1.7rem; display: flex; align-items: center; justify-content: center; background: var(--navy); color: var(--surface); font-family: var(--mono); font-size: 0.8rem; font-weight: 600; border-radius: 50%; }
+    .steps h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+    .steps p { margin: 0.2rem 0; }
+
+    .figure { margin: 1.6rem 0; }
+    .figure .frame { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 1.4rem; overflow-x: auto; }
+    .figure svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+    .figure figcaption { font-size: 0.82rem; color: var(--ink-faint); margin-top: 0.6rem; text-align: center; }
+    .figure img { display: block; width: 100%; height: auto; border: 1px solid var(--hairline); border-radius: var(--radius); }
+
+    .shots { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 1.2rem; }
+    .shot { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); overflow: hidden; }
+    .shot img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--hairline); background: var(--surface-2); }
+    .shot .cap { padding: 0.7rem 0.9rem; font-size: 0.82rem; }
+    .shot .cap b { display: block; color: var(--ink); }
+    .shot .cap span { color: var(--ink-faint); }
+
+    .table-scroll { overflow-x: auto; margin: 1.3rem 0; border: 1px solid var(--hairline); border-radius: var(--radius); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 560px; }
+    thead th { text-align: left; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); background: var(--surface-2); padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--hairline-strong); white-space: nowrap; }
+    tbody td { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    td strong { color: var(--ink); }
+
+    .pill { display: inline-block; font-family: var(--mono); font-size: 0.68rem; font-weight: 600; padding: 0.14rem 0.45rem; border-radius: 3px; }
+    .p-good { color: var(--good); background: var(--good-bg); }
+    .p-navy { color: var(--navy); background: var(--chip-bg); }
+
+    .dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1.4rem; margin: 1rem 0; font-size: 0.92rem; }
+    .dl dt { font-weight: 600; color: var(--navy); font-family: var(--mono); font-size: 0.82rem; }
+    .dl dd { margin: 0; color: var(--ink-soft); }
+
+    footer { margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--hairline); font-size: 0.82rem; color: var(--ink-faint); }
+    footer p { max-width: none; }
+
+    .diagram-text { fill: var(--ink); font-family: var(--sans); }
+    .diagram-mono { fill: var(--ink-soft); font-family: var(--mono); }
+    .diagram-box { fill: var(--surface-2); stroke: var(--hairline-strong); }
+    .diagram-box-navy { fill: none; stroke: var(--navy); stroke-width: 1.5; }
+    .diagram-line { stroke: var(--navy-soft); stroke-width: 1.5; fill: none; }
+    .diagram-line-dash { stroke: var(--ink-faint); stroke-width: 1.3; fill: none; stroke-dasharray: 4 3; }
+    .diagram-accent { fill: var(--navy); }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="toc">
+      <div class="brand">RM Nexus</div>
+      <div class="brand-sub">Documentation</div>
+      <nav>
+        <a href="#overview"><span class="toc-num">01</span>Overview &amp; use case</a>
+        <a href="#using"><span class="toc-num">02</span>Using the dashboard</a>
+        <a href="#launch"><span class="toc-num">03</span>Launch &amp; run</a>
+        <a href="#architecture"><span class="toc-num">04</span>Architecture</a>
+        <a href="#ci"><span class="toc-num">05</span>CI, controls &amp; benefits</a>
+        <a href="#evidence"><span class="toc-num">06</span>Test evidence</a>
+        <a href="#structure"><span class="toc-num">07</span>Repo structure</a>
+        <a href="#build"><span class="toc-num">08</span>How it was built</a>
+        <a href="#docs"><span class="toc-num">09</span>Governance &amp; docs</a>
+        <a href="#glossary"><span class="toc-num">10</span>Glossary</a>
+        <a href="#faq"><span class="toc-num">11</span>Troubleshooting</a>
+      </nav>
+    </aside>
+
+    <main>
+      <header class="masthead">
+        <p class="eyebrow">RM ClientNexus · User &amp; technical documentation</p>
+        <h1>RM Nexus Documentation</h1>
+        <p class="lead">An AI-assisted "Next Best Conversation" dashboard for institutional banking
+          Relationship Managers — what it does, how to run it, how it's built, and how it's
+          governed. Company names are real; <strong>all financial data is synthetic</strong>.</p>
+      </header>
+
+      <!-- 01 -->
+      <section id="overview">
+        <p class="sec-label">01 · Overview &amp; use case</p>
+        <h2>What RM Nexus is, and why it helps</h2>
+        <p>A <strong>Relationship Manager (RM)</strong> at an institutional bank looks after a book
+          of large clients — super funds, sovereign wealth funds, asset managers, corporates. Their
+          recurring question is simple to state and hard to answer well: <em>"what should I talk to
+          each client about next?"</em> RM Nexus answers it. It renders the RM's book of 8 clients
+          as scannable tiles and, for each, a prioritised <strong>Next Best Conversation
+          (NBC)</strong> briefing — the three most worthwhile things to raise, most urgent first,
+          each grounded in that client's actual position and the relevant APRA thresholds.</p>
+
+        <h3>The benefit</h3>
+        <div class="grid">
+          <div class="card">
+            <h3>Faster triage</h3>
+            <p>The whole book is legible at a glance — alert-tinted tiles, live cash-flow
+              sparklines, and a one-line "why now" per client — so an RM spots what needs attention
+              without opening a spreadsheet.</p>
+          </div>
+          <div class="card">
+            <h3>Trustworthy by design</h3>
+            <p>Every figure comes from the client dataset — <strong>never the AI</strong>. The model
+              only narrates and prioritises; it cannot compute, round, or invent a number. No
+              hallucinated figure can reach an RM as fact.</p>
+          </div>
+          <div class="card">
+            <h3>Always available</h3>
+            <p>The dashboard works fully with <strong>no AI at all</strong>. A fresh AI briefing is
+              an on-demand overlay; if it's unavailable, the card silently keeps its static briefing.
+              No outage, no broken screen.</p>
+          </div>
+          <div class="card">
+            <h3>Built for a regulated shop</h3>
+            <p>Human-gated change control, automated tests, and a governance &amp; security review
+              mapped to APRA's AI Letter, CPS 230 and CPS 234 — credible inside a bank, not just a
+              demo.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <p><strong>The core idea in one line:</strong> data is authoritative; the LLM only
+            narrates. That single boundary is what makes an AI feature safe to put in front of a
+            banker.</p>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section id="using">
+        <p class="sec-label">02 · Using the dashboard</p>
+        <h2>How to use it</h2>
+        <ol class="steps">
+          <li>
+            <h3>Scan the book</h3>
+            <p>Open the dashboard at <code>/rm</code>. Each of the 8 client tiles shows net position,
+              total exposure, liquidity score, revenue &amp; YoY, a 30-day cash-flow sparkline
+              (green above the line = inflow, red below = outflow), product chips, and a colour tint
+              keyed to the client's alert level (red = critical, amber = high, blue = medium, green =
+              none).</p>
+          </li>
+          <li>
+            <h3>Read the static briefing</h3>
+            <p>Every tile always shows a briefing summary and a <code>Show 3 NBC ▾</code> toggle that
+              expands the three prioritised conversations — urgency, a short action, the reasoning
+              (citing A$ figures and APRA APS 210 thresholds), and suggested next steps. This is the
+              dependable floor: it needs no AI.</p>
+          </li>
+          <li>
+            <h3>Open a client for the full picture</h3>
+            <p>Click a tile (look for <em>"View details ›"</em>) to open the full-screen client view:
+              profile and contacts, currency mix, a 0–100 liquidity bar, a large cash-flow
+              sparkline, product breakdown, the alert detail, and the AI NBC panel.</p>
+          </li>
+          <li>
+            <h3>Generate fresh AI briefings (optional)</h3>
+            <p>Click <strong>Generate All Briefings</strong> (dashboard) or <strong>Generate
+              ▸</strong> (a single client) to overlay fresh AI briefings. They stream in
+              progressively, one client at a time. If a live model isn't configured, you'll see a
+              deterministic template briefing instead — the system never breaks.</p>
+          </li>
+          <li>
+            <h3>Open this documentation any time</h3>
+            <p>The <strong>Documentation ↗</strong> link in the top-right of the app nav opens this
+              page.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- 03 -->
+      <section id="launch">
+        <p class="sec-label">03 · Launch &amp; run</p>
+        <h2>Running RM Nexus locally</h2>
+        <p><strong>Prerequisites:</strong> Python 3.10+ and Node.js (for Next.js 16 / React 19).
+          No API key is required — that's the point.</p>
+
+        <h3>Two servers</h3>
+        <pre><code># Terminal 1 — backend (FastAPI) on :8000
+python backend/run.py
+
+# Terminal 2 — frontend (Next.js) on :3000
+cd frontend
+npm install      # first run only
+npm run dev</code></pre>
+        <p>Then open <a href="http://localhost:3000/rm">http://localhost:3000/rm</a>.</p>
+
+        <div class="callout good">
+          <p><strong>Zero-live-LLM floor.</strong> With no <code>ANTHROPIC_API_KEY</code> set, the
+            dashboard loads all 8 clients with their static briefings and makes <strong>zero AI
+            requests</strong> — verified by a cold walk-away check. To enable live AI briefings, set
+            <code>ANTHROPIC_API_KEY</code> (copy <code>backend/.env.example</code> to
+            <code>backend/.env</code>); optionally override the model with
+            <code>ANTHROPIC_MODEL</code> (default <code>claude-haiku-4-5-20251001</code>).</p>
+        </div>
+
+        <h3>Verify it works</h3>
+        <pre><code># Backend guarantees — key-free, network-free
+cd backend &amp;&amp; pytest -q            # 6 tests: boundary, no-key fallback, contract, SSE
+
+# Browser visual checks — real Chromium, 5 spec scenarios
+cd frontend &amp;&amp; npm run e2e          # headless
+cd frontend &amp;&amp; npm run e2e:headed   # watch it drive a real browser</code></pre>
+        <p class="muted">In this repo's Claude Code setup, the <code>/launch</code> skill starts both
+          servers and opens the browser, and <code>/verify</code> runs the headed visual suite.</p>
+      </section>
+
+      <!-- 04 -->
+      <section id="architecture">
+        <p class="sec-label">04 · Architecture</p>
+        <h2>How it fits together</h2>
+        <p>A Next.js frontend renders the book from a <strong>bundled dataset</strong> and, on
+          demand, streams fresh AI briefings from a Python/FastAPI backend over Server-Sent Events.
+          The AI provider is an <em>optional overlay</em>, drawn with a dashed line below to signal
+          that nothing on the critical path depends on it.</p>
+
+        <figure class="figure">
+          <div class="frame">
+            <svg viewBox="0 0 720 340" role="img" aria-label="Architecture diagram">
+              <!-- Browser -->
+              <rect class="diagram-box-navy" x="20" y="30" width="200" height="150" rx="6" />
+              <text class="diagram-text" x="120" y="52" text-anchor="middle" font-size="13" font-weight="600">Browser — Next.js</text>
+              <text class="diagram-mono" x="120" y="70" text-anchor="middle" font-size="10">/rm dashboard</text>
+              <rect class="diagram-box" x="40" y="86" width="160" height="34" rx="4" />
+              <text class="diagram-text" x="120" y="107" text-anchor="middle" font-size="10.5">8 client tiles + detail</text>
+              <rect class="diagram-box" x="40" y="128" width="160" height="34" rx="4" />
+              <text class="diagram-text" x="120" y="149" text-anchor="middle" font-size="10.5">bundled dataset (figures)</text>
+
+              <!-- Backend -->
+              <rect class="diagram-box-navy" x="300" y="30" width="200" height="150" rx="6" />
+              <text class="diagram-text" x="400" y="52" text-anchor="middle" font-size="13" font-weight="600">FastAPI — :8000</text>
+              <rect class="diagram-box" x="320" y="66" width="160" height="34" rx="4" />
+              <text class="diagram-text" x="400" y="87" text-anchor="middle" font-size="10.5">POST /api/rm-run</text>
+              <rect class="diagram-box" x="320" y="106" width="160" height="34" rx="4" />
+              <text class="diagram-text" x="400" y="127" text-anchor="middle" font-size="10.5">SSE /api/stream/{id}</text>
+              <rect class="diagram-box" x="320" y="146" width="160" height="26" rx="4" />
+              <text class="diagram-mono" x="400" y="163" text-anchor="middle" font-size="9.5">worker → queue → SSE</text>
+
+              <!-- Agent -->
+              <rect class="diagram-box-navy" x="300" y="235" width="200" height="70" rx="6" />
+              <text class="diagram-text" x="400" y="262" text-anchor="middle" font-size="12.5" font-weight="600">NBC agent</text>
+              <text class="diagram-mono" x="400" y="282" text-anchor="middle" font-size="10">tool-less · narrates only</text>
+
+              <!-- Anthropic -->
+              <rect class="diagram-box" x="560" y="235" width="140" height="70" rx="6" stroke-dasharray="4 3" />
+              <text class="diagram-text" x="630" y="262" text-anchor="middle" font-size="12" font-weight="600">Anthropic API</text>
+              <text class="diagram-mono" x="630" y="282" text-anchor="middle" font-size="9.5">optional overlay</text>
+
+              <!-- Arrows -->
+              <line class="diagram-line" x1="220" y1="95" x2="300" y2="85" />
+              <polygon class="diagram-accent" points="300,85 291,82 292,90" />
+              <text class="diagram-mono" x="260" y="82" text-anchor="middle" font-size="9">start run</text>
+
+              <line class="diagram-line" x1="300" y1="123" x2="220" y2="135" />
+              <polygon class="diagram-accent" points="220,135 229,131 229,139" />
+              <text class="diagram-mono" x="260" y="150" text-anchor="middle" font-size="9">SSE frames</text>
+
+              <line class="diagram-line" x1="400" y1="180" x2="400" y2="235" />
+              <polygon class="diagram-accent" points="400,235 396,226 404,226" />
+
+              <line class="diagram-line-dash" x1="500" y1="270" x2="560" y2="270" />
+              <polygon class="diagram-accent" points="560,270 551,266 551,274" />
+            </svg>
+          </div>
+          <figcaption>Frontend renders figures from the bundled dataset; the backend streams
+            AI narrative overlays. The Anthropic call (dashed) is optional — remove it and the
+            dashboard still works.</figcaption>
+        </figure>
+
+        <h3>The two boundaries that define the design</h3>
+        <div class="dl">
+          <dt>Data authority</dt>
+          <dd>The agent is <em>tool-less</em> (<code>NBCAgent.tools = []</code>) so it cannot compute
+            or alter a figure, and <code>NBCItem</code> is all-strings (no numeric field) so a
+            narrated number is never trusted as UI data. Two halves of one boundary.</dd>
+          <dt>Zero-LLM floor</dt>
+          <dd>Static "yesterday's briefing" per client; the live overlay degrades silently to it via
+            the <code>__NBC_ERROR__</code> path on any error, missing key, timeout, or malformed
+            output.</dd>
+          <dt>Progressive reveal</dt>
+          <dd>A worker thread parallelises the blocking SDK calls and hands off to the async SSE
+            endpoint through a stdlib <code>queue.Queue</code>, whose get-timeout doubles as the
+            ~10 s keepalive tick.</dd>
+        </div>
+      </section>
+
+      <!-- 05 -->
+      <section id="ci">
+        <p class="sec-label">05 · CI, controls &amp; benefits</p>
+        <h2>Continuous integration &amp; change controls</h2>
+        <p>From item 6 onward, <code>main</code> is protected: no change lands without a pull
+          request, passing CI, and a <strong>human merge</strong>. The pipeline runs on every push
+          and pull request, and every UI change carries browser screenshots as pre-merge evidence.</p>
+
+        <figure class="figure">
+          <div class="frame">
+            <svg viewBox="0 0 760 250" role="img" aria-label="CI and change-control flow">
+              <!-- nodes -->
+              <g font-size="11" text-anchor="middle">
+                <rect class="diagram-box-navy" x="10" y="95" width="96" height="46" rx="6" />
+                <text class="diagram-text" x="58" y="116" font-weight="600">Branch</text>
+                <text class="diagram-mono" x="58" y="131" font-size="8.5">+ commit</text>
+
+                <rect class="diagram-box-navy" x="140" y="95" width="96" height="46" rx="6" />
+                <text class="diagram-text" x="188" y="122" font-weight="600">Pull request</text>
+
+                <!-- CI cluster -->
+                <rect class="diagram-box" x="270" y="20" width="150" height="200" rx="6" />
+                <text class="diagram-mono" x="345" y="38" font-size="9" fill="var(--navy)">CI (push + PR)</text>
+                <rect class="diagram-box-navy" x="286" y="50" width="118" height="30" rx="4" />
+                <text class="diagram-text" x="345" y="69" font-size="10">backend · pytest+ruff</text>
+                <rect class="diagram-box-navy" x="286" y="88" width="118" height="30" rx="4" />
+                <text class="diagram-text" x="345" y="107" font-size="10">frontend · lint</text>
+                <rect class="diagram-box-navy" x="286" y="126" width="118" height="30" rx="4" />
+                <text class="diagram-text" x="345" y="145" font-size="10">visual · Playwright</text>
+                <rect class="diagram-box-navy" x="286" y="164" width="118" height="42" rx="4" />
+                <text class="diagram-text" x="345" y="182" font-size="10">screenshots →</text>
+                <text class="diagram-mono" x="345" y="197" font-size="8">PR comment</text>
+
+                <rect class="diagram-box-navy" x="470" y="95" width="110" height="46" rx="6" />
+                <text class="diagram-text" x="525" y="116" font-weight="600">Human review</text>
+                <text class="diagram-mono" x="525" y="131" font-size="8.5">+ approve</text>
+
+                <rect class="diagram-box-navy" x="630" y="95" width="110" height="46" rx="6" />
+                <text class="diagram-text" x="685" y="116" font-weight="600">Human merge</text>
+                <text class="diagram-mono" x="685" y="131" font-size="8.5">to main</text>
+              </g>
+              <!-- arrows -->
+              <g>
+                <line class="diagram-line" x1="106" y1="118" x2="140" y2="118" /><polygon class="diagram-accent" points="140,118 131,114 131,122" />
+                <line class="diagram-line" x1="236" y1="118" x2="270" y2="118" /><polygon class="diagram-accent" points="270,118 261,114 261,122" />
+                <line class="diagram-line" x1="420" y1="118" x2="470" y2="118" /><polygon class="diagram-accent" points="470,118 461,114 461,122" />
+                <line class="diagram-line" x1="580" y1="118" x2="630" y2="118" /><polygon class="diagram-accent" points="630,118 621,114 621,122" />
+              </g>
+              <!-- guards -->
+              <text class="diagram-mono" x="345" y="240" text-anchor="middle" font-size="9" fill="var(--warn)">guarded by: ruleset (no bypass) + git_guard hook</text>
+            </svg>
+          </div>
+          <figcaption>The governed path. The agent can do everything except the final merge — that
+            is always a human.</figcaption>
+        </figure>
+
+        <h3>Controls and why they matter</h3>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Control</th><th>What it does</th><th>Benefit</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Branch-protection ruleset</strong> (<code>human-review-main</code>)</td>
+                <td>Requires a PR and passing <code>backend</code>/<code>frontend</code> checks; no
+                  bypass for anyone, including admins.</td>
+                <td>Nothing reaches production without automated verification and a human decision —
+                  the AI cannot self-approve its own work.</td>
+              </tr>
+              <tr>
+                <td><strong><code>git_guard</code> hook</strong></td>
+                <td>A local <code>PreToolUse</code> hook that blocks direct <code>push</code>/<code>commit</code>
+                  to <code>main</code> during an agent session.</td>
+                <td>Defence in depth — a local belt to the GitHub ruleset's suspenders, catching
+                  mistakes before they even reach the server.</td>
+              </tr>
+              <tr>
+                <td><strong>Backend tests</strong> (pytest + ruff)</td>
+                <td>Key-free, network-free tests assert the data-authoritative boundary and the
+                  no-key fallback on every push/PR.</td>
+                <td>The two product guarantees can't silently regress — they're machine-checked, not
+                  just documented.</td>
+              </tr>
+              <tr>
+                <td><strong>Visual verification</strong> (Playwright)</td>
+                <td>Drives real Chromium against a cold, frontend-only build; asserts each UI
+                  criterion and captures a screenshot.</td>
+                <td>A green run is also proof of the zero-LLM floor; assurance happens <em>before</em>
+                  merge, not after deployment.</td>
+              </tr>
+              <tr>
+                <td><strong>Inline screenshot evidence</strong></td>
+                <td>Screenshots are published to a branch and embedded in a PR comment for the
+                  reviewer.</td>
+                <td>A human can visually confirm the outcome matches intent, right in the PR — no
+                  local checkout needed.</td>
+              </tr>
+              <tr>
+                <td><strong>Spec-driven trail</strong> (<code>specs/</code>)</td>
+                <td>Each change references a spec and adds a README Features-log entry.</td>
+                <td>Auditable "why", not just "what" — the change history reads as a record, not a
+                  pile of diffs.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 06 -->
+      <section id="evidence">
+        <p class="sec-label">06 · Test evidence</p>
+        <h2>Screenshots the CI captured</h2>
+        <p>These are the <em>actual</em> images the <code>visual</code> job captured while driving a
+          real browser through the spec scenarios — the same ones it posts onto each pull request.
+          A green suite means the tile features render and behave as specified, on a cold build with
+          no AI.</p>
+        <div class="shots">
+          <figure class="shot">
+            <img loading="lazy" src="https://raw.githubusercontent.com/van-manh-mai/rm-nexus/pr-visual-evidence/pr-2/01-dashboard-cold.png" alt="Dashboard on a cold, no-AI load — 8 client tiles" />
+            <div class="cap"><b>Cold dashboard (no AI)</b><span>8 tiles render from the dataset — sparklines + alert tints. Zero AI requests.</span></div>
+          </figure>
+          <figure class="shot">
+            <img loading="lazy" src="https://raw.githubusercontent.com/van-manh-mai/rm-nexus/pr-visual-evidence/pr-2/02-tile-critical.png" alt="A critical client tile close-up" />
+            <div class="cap"><b>Critical tile</b><span>Red tint, cash-flow sparkline, and the "View details ›" affordance.</span></div>
+          </figure>
+          <figure class="shot">
+            <img loading="lazy" src="https://raw.githubusercontent.com/van-manh-mai/rm-nexus/pr-visual-evidence/pr-2/04-detail-open.png" alt="Client detail view opened" />
+            <div class="cap"><b>Detail view</b><span>Clicking a tile opens the full client profile and AI NBC panel.</span></div>
+          </figure>
+          <figure class="shot">
+            <img loading="lazy" src="https://raw.githubusercontent.com/van-manh-mai/rm-nexus/pr-visual-evidence/pr-2/05-nbc-toggle-no-detail.png" alt="Expanded NBC list without opening the detail view" />
+            <div class="cap"><b>In-card NBC toggle</b><span>Expanding the briefing does <em>not</em> open the detail view — an isolated control.</span></div>
+          </figure>
+        </div>
+        <p class="muted" style="margin-top:1rem;">Images are served from the repository's
+          <code>pr-visual-evidence</code> branch. If they don't load, you're likely offline — they
+          are external references, not embedded.</p>
+      </section>
+
+      <!-- 07 -->
+      <section id="structure">
+        <p class="sec-label">07 · Repo structure</p>
+        <h2>Where things live</h2>
+        <pre><code>rm-nexus/
+├─ backend/                 FastAPI + tool-less NBC agent (Python)
+│  ├─ run.py                entry point (UTF-8 before imports)
+│  ├─ server.py             rm-run, SSE stream, health
+│  ├─ rm_agent.py           NBCAgent — narrates only, template fallback
+│  └─ tests/                6 key-free, network-free tests
+├─ frontend/                Next.js 16 / React 19 / TypeScript / Tailwind
+│  ├─ src/app/rm/           the dashboard route
+│  ├─ src/components/       WbcNav · Sparkline · NBCCard · ClientDetail
+│  ├─ src/lib/rmClients.ts  the 8-client synthetic dataset (authoritative)
+│  ├─ src/hooks/            useSSEStream (EventSource wrapper)
+│  └─ e2e/                  Playwright visual verification
+├─ docs/                    governance review · this documentation
+├─ specs/                   product spec, contracts, feature specs, reviews
+└─ .github/ · .claude/      CI workflow · agent operating rules + git_guard</code></pre>
+      </section>
+
+      <!-- 08 -->
+      <section id="build">
+        <p class="sec-label">08 · How it was built</p>
+        <h2>Delivery in eight governed steps</h2>
+        <p>RM Nexus was built as 8 numbered, checkpointed items in two regimes. <strong>Stage A</strong>
+          (items 1–5) committed directly to <code>main</code> to stand up the vertical slice;
+          <strong>Stage B</strong> (items 6–8) went through the full <code>branch → PR → CI → human
+          approval → merge</code> path.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>#</th><th>Item</th><th>Regime</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Scaffold + CI + operating rules</td><td><span class="pill p-navy">Stage A</span></td></tr>
+              <tr><td>2</td><td>Backend — tool-less NBC agent, FastAPI SSE, key-free tests</td><td><span class="pill p-navy">Stage A</span></td></tr>
+              <tr><td>3</td><td>Frontend data + streaming hook</td><td><span class="pill p-navy">Stage A</span></td></tr>
+              <tr><td>4</td><td>Tailwind components (nav, sparkline, card, detail)</td><td><span class="pill p-navy">Stage A</span></td></tr>
+              <tr><td>5</td><td>Dashboard page + end-to-end wire-up</td><td><span class="pill p-navy">Stage A</span></td></tr>
+              <tr><td>6</td><td>Governance retrofit (ruleset + git_guard + PR comment)</td><td><span class="pill p-good">Stage B</span></td></tr>
+              <tr><td>7</td><td>Richer tiles + browser visual verification</td><td><span class="pill p-good">Stage B</span></td></tr>
+              <tr><td>8</td><td>Verify + document (this write-up, cold walk-away)</td><td><span class="pill p-good">Stage B</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The full item-by-item Features log, and the Frame / Design / Build / Verify / Document
+          narrative, live in the
+          <a href="https://github.com/van-manh-mai/rm-nexus/blob/main/README.md">README</a>.</p>
+      </section>
+
+      <!-- 09 -->
+      <section id="docs">
+        <p class="sec-label">09 · Governance &amp; docs</p>
+        <h2>Deeper reading</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Governance &amp; security review</h3>
+            <p>Top-3 AI governance controls mapped to the APRA AI Letter and CPS 230, plus a CPS 234
+              security review.<br />
+              <a href="https://github.com/van-manh-mai/rm-nexus/blob/main/docs/governance-and-security-review.md">docs/governance-and-security-review.md</a></p>
+          </div>
+          <div class="card">
+            <h3>Code &amp; security review</h3>
+            <p>Engineering-depth review — 14 findings with <code>file:line</code> evidence and
+              demo→prod severity.<br />
+              <a href="https://github.com/van-manh-mai/rm-nexus/blob/main/specs/003-code-security-review/spec.md">specs/003-code-security-review/spec.md</a></p>
+          </div>
+          <div class="card">
+            <h3>Product spec &amp; contracts</h3>
+            <p>The behavioural spec, TS/SSE/agent contracts, data model, quickstart and delivery
+              process.<br />
+              <a href="https://github.com/van-manh-mai/rm-nexus/tree/main/specs/001-rm-clientnexus">specs/001-rm-clientnexus/</a></p>
+          </div>
+          <div class="card">
+            <h3>Agent operating rules</h3>
+            <p>The non-negotiables and build regimes AI agents must follow in this repo.<br />
+              <a href="https://github.com/van-manh-mai/rm-nexus/blob/main/CLAUDE.md">CLAUDE.md</a></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10 -->
+      <section id="glossary">
+        <p class="sec-label">10 · Glossary</p>
+        <h2>Terms</h2>
+        <div class="dl">
+          <dt>NBC</dt><dd>Next Best Conversation — the prioritised set of things an RM should raise with a client.</dd>
+          <dt>RM</dt><dd>Relationship Manager — the banker who owns the client relationship.</dd>
+          <dt>APRA</dt><dd>Australian Prudential Regulation Authority — the regulator for AU banks, insurers and super.</dd>
+          <dt>CPS 230</dt><dd>APRA's Operational Risk Management standard (in force 1 Jul 2025) — critical operations, tolerance, service providers.</dd>
+          <dt>CPS 234</dt><dd>APRA's Information Security standard — controls, testing, and 72-hour incident notification.</dd>
+          <dt>APS 210</dt><dd>APRA's liquidity standard; the dashboard cites its warning thresholds where relevant.</dd>
+          <dt>SSE</dt><dd>Server-Sent Events — a one-way HTTP stream used to reveal AI briefings progressively.</dd>
+          <dt>Zero-LLM floor</dt><dd>The guarantee that the app is fully usable with no AI service available.</dd>
+        </div>
+      </section>
+
+      <!-- 11 -->
+      <section id="faq">
+        <p class="sec-label">11 · Troubleshooting</p>
+        <h2>Common questions</h2>
+        <h3>The briefings look generic / say the same structure — is it broken?</h3>
+        <p>No. With no <code>ANTHROPIC_API_KEY</code>, "Generate" returns a deterministic
+          <em>template</em> briefing built from the client's figures. That's the zero-LLM floor
+          working. Set a key for live model narration.</p>
+        <h3>Screenshots on this page don't load.</h3>
+        <p>They're external references to the repository's evidence branch; you're likely offline or
+          the repo is private to you. The rest of the page is self-contained.</p>
+        <h3>The "Documentation" link 404s.</h3>
+        <p>The app serves this file from <code>public/</code>, which is generated from
+          <code>docs/rm-nexus-documentation.html</code> on <code>npm run dev</code>/<code>build</code>.
+          If you opened the app another way, restart the dev server so the copy step runs.</p>
+        <h3>Nothing streams when I click Generate.</h3>
+        <p>Confirm the backend is up (<code>curl http://localhost:8000/api/health</code> →
+          <code>{"status":"ok"}</code>). The browser connects directly to <code>:8000</code> for the
+          stream; if the backend is down, cards keep their static briefings by design.</p>
+      </section>
+
+      <footer>
+        <p>RM ClientNexus — AI-assisted "Next Best Conversation" dashboard. Company names are real;
+          all financial data is synthetic and for demonstration only. Repository:
+          <a href="https://github.com/van-manh-mai/rm-nexus">github.com/van-manh-mai/rm-nexus</a>.</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

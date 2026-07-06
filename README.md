@@ -13,6 +13,28 @@ narrates.** Company names are real; **all financial data is synthetic and for de
 
 ---
 
+## Quickstart
+
+**Prerequisites:** Python 3.10+ and Node.js. **No API key required** (that's the zero-LLM floor).
+
+```bash
+# Terminal 1 — backend (FastAPI) on :8000
+python backend/run.py
+
+# Terminal 2 — frontend (Next.js) on :3000
+cd frontend && npm install && npm run dev
+```
+
+Open **http://localhost:3000/rm**. For live AI briefings, set `ANTHROPIC_API_KEY` (copy
+`backend/.env.example` → `backend/.env`); override the model with `ANTHROPIC_MODEL` (default
+`claude-haiku-4-5-20251001`).
+
+📖 **Full user & technical documentation:** [`docs/rm-nexus-documentation.html`](docs/rm-nexus-documentation.html)
+— app walkthrough, launch guide, architecture & CI diagrams, test evidence, and governance links.
+Also reachable from the running app via the **Documentation ↗** link in the top nav.
+
+---
+
 ## Frame · Design · Build · Verify · Document
 
 ### Frame
@@ -82,6 +104,9 @@ added a Features-log entry (below) and updated `CLAUDE.md` when a module appeare
 
 ### Document
 
+- **User & technical documentation:** [`docs/rm-nexus-documentation.html`](docs/rm-nexus-documentation.html)
+  — the front door: app walkthrough, launch guide, architecture & CI diagrams, test evidence,
+  glossary. Served by the running app at `/rm-nexus-documentation.html` (Documentation ↗ in the nav).
 - **Specs & contracts:** [`specs/001-rm-clientnexus/`](specs/001-rm-clientnexus/) (product spec,
   TS/SSE/agent contracts, data model, quickstart, delivery process) and
   [`specs/002-richer-client-tiles/spec.md`](specs/002-richer-client-tiles/spec.md).
@@ -188,3 +213,10 @@ added a Features-log entry (below) and updated `CLAUDE.md` when a module appeare
   ruff + pytest 6/6, frontend lint + `tsc` clean, e2e 5/5). Docs only — no code changed.
   *Verified:* cold walk-away passed 2026-07-06; full local suite green. *Spec:*
   specs/001-rm-clientnexus/process.md (item 8).
+- **User documentation.** `docs/rm-nexus-documentation.html` — a self-contained user & technical
+  doc: app/use-case/benefits, launch guide, inline SVG architecture & CI-controls diagrams,
+  embedded CI test screenshots, repo map, glossary and troubleshooting, with links out to the
+  governance and code-security reviews. The running app links to it (**Documentation ↗** in the nav);
+  a `predev`/`prebuild` copy step serves it from `public/` while `docs/` stays the single source.
+  README gains a Quickstart + documentation pointer. *Verified:* `tsc` + ESLint + `next build`
+  clean; served doc + nav link confirmed in-browser; e2e 5/5 green. Delivered by PR under Stage B.
