@@ -95,3 +95,10 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   regulatory claim cited to an APRA primary source (theme labels flagged as our groupings, not
   APRA section numbers). *Verified:* anchors resolve; advisor-reviewed for regulatory calibration.
   *Sources:* APRA AI Letter, CPS 230, CPS 234.
+- **Code & security review.** `specs/003-code-security-review/spec.md` — an engineering-depth review
+  (companion to the regulatory one), analysis only, no code changed. 14 findings with `file:line`
+  evidence and demo→prod severity: e.g. the `_RUNS` entry/queue leak on un-opened streams, unbounded
+  `RunRequest.clients` (cost/DoS), silent broad-`except` (no logging), a tile-accessibility ARIA
+  nesting, test-coverage gaps, and `0.0.0.0`-bind-with-no-auth. Balanced with strengths (tool-less
+  boundary, tested degradation, secrets hygiene). *Verified:* every citation re-read against source;
+  advisor independent pass (caught + fixed a C7 mis-statement); self-review caveat stated.
