@@ -35,3 +35,10 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   `test_no_key_fallback`, `test_sse_smoke`). *Verified:* 6/6 pytest green + live curl of
   `/api/stream` yielding urgency-ordered `nbc` frames from posted data, then `done`.
   *Spec:* contracts/nbc-agent.md, contracts/sse-contract.md.
+- **Item 3 — Frontend data + hook.** `types/api.ts` (NBCItem/ClientBriefing/SSEMessage/RMClient;
+  `NBCItem` is all-strings — the second half of the data-authoritative boundary, so no model
+  figure is ever trusted as UI data). `lib/rmClients.ts` — the 8-client book fully populated
+  (synthetic $M figures, APRA APS 210 references, 30-point mixed-sign cashflows, 3 urgency-ordered
+  static NBCs each). `hooks/useSSEStream.ts` — EventSource wrapper, direct to `:8000` to avoid
+  proxy buffering. *Verified:* `tsc` + ESLint clean; 8 clients, all cashflows length 30.
+  *Spec:* contracts/api.types.md, data-model.md.
