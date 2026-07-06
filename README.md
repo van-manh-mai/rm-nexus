@@ -42,3 +42,11 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   static NBCs each). `hooks/useSSEStream.ts` — EventSource wrapper, direct to `:8000` to avoid
   proxy buffering. *Verified:* `tsc` + ESLint clean; 8 clients, all cashflows length 30.
   *Spec:* contracts/api.types.md, data-model.md.
+- **Item 4 — Frontend Tailwind components.** `Sparkline` (pure SVG ± bar chart, no chart
+  library). `WbcNav` (red utility bar + white nav, bank chrome). `NBCCard` (2×2 metrics,
+  alert chip, product chips, expandable static/live briefing — a live SSE `ClientBriefing`
+  overlays the narrative only, never the numeric props). `ClientDetail` (full-screen 3-column
+  overlay: profile/currency mix/liquidity bar, cash-flow sparkline/product breakdown/alert box,
+  AI NBC panel with a `Generate ▸` action and toast callback). Pure Tailwind, no component
+  library. *Verified:* `tsc` + ESLint + `next build` all clean (components not yet wired into
+  a route). *Spec:* contracts/api.types.md, data-model.md.
