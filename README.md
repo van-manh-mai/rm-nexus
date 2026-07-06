@@ -50,3 +50,14 @@ narrates.** Company names are real; **all financial data is synthetic and for de
   AI NBC panel with a `Generate ▸` action and toast callback). Pure Tailwind, no component
   library. *Verified:* `tsc` + ESLint + `next build` all clean (components not yet wired into
   a route). *Spec:* contracts/api.types.md, data-model.md.
+- **Item 5 — Page + end-to-end wire-up.** `app/rm/page.tsx`: grid of `NBCCard` over the 8-client
+  book, "Generate All Briefings" POSTs `/api/rm-run` then opens `useSSEStream`, overlaying each
+  `nbc` frame's narrative onto its card as it arrives; `nbc_error` silently leaves that card on
+  its static briefing (no error surfaced); `done`/`error` close the stream. Click a card to open
+  `ClientDetail`, with a per-client `Generate ▸` re-running the same flow for one client. Toasts
+  confirm actions and stream state. *Verified:* `tsc` + ESLint + `next build` clean; live in
+  browser against `python backend/run.py` with no `ANTHROPIC_API_KEY` set — cold static floor
+  renders (SC-001/SC-006), "Generate All" streams progressive per-card reveal end-to-end
+  (SC-002) via real `/api/rm-run` → `/api/stream` calls, card expand and `ClientDetail` overlay
+  both render exactly 3 urgency-ordered items, no console errors. *Spec:* quickstart.md
+  validation scenarios, sse-contract.md.

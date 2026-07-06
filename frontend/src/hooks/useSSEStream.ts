@@ -5,7 +5,8 @@ import type { SSEMessage } from '@/types/api'
 // SSE goes DIRECT to the backend, not through the Next.js dev proxy: a rewrite/proxy
 // buffers event streams and defeats the progressive per-client reveal. Override with
 // NEXT_PUBLIC_API_URL, or pass an explicit baseUrl to open().
-const DEFAULT_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+const DEFAULT_BASE = API_BASE
 
 /**
  * EventSource wrapper for the RM run stream.
