@@ -39,6 +39,8 @@ an LLM, streamed over SSE. Company names are real; **all financial data is synth
 - `docs/governance-and-security-review.md` (+ `.html`) names the Responsible-AI controls: the top-3
   AI governance controls mapped to the APRA AI Letter / CPS 230, and a CPS 234 security review. It
   is the control-to-evidence register for the boundary/resilience/change-governance guarantees.
+- `specs/003-code-security-review/spec.md` — engineering-depth code & security review (findings with
+  `file:line`, demo→prod severity); the known-issues register companion to the governance doc.
 - CI jobs: `backend` (ruff+pytest), `frontend` (lint), `visual` (Playwright → inline screenshots
   on the PR via the orphan `pr-visual-evidence` branch), `pr-comment` (status comment). The
   `visual` job is informational, not a required check.
