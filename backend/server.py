@@ -27,7 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from rm_agent import URGENCY_ORDER, NBCAgent
+from rm_agent import URGENCY_ORDER, NBCAgent, _log
 
 AGENT_TIMEOUT_S = 60
 KEEPALIVE_S = 10
@@ -79,13 +79,16 @@ def _generate_one(client: dict) -> str:
         text = _agent.generate(client)
         match = re.search(r"\{[\s\S]*\}", text)
         if not match:
+            _log(f"{cid}: nbc_error — no JSON object in model output (card keeps static)")
             return f"__NBC_ERROR__{cid}"
         briefing = json.loads(match.group(0))
         items = briefing.get("next_best", [])
         if len(items) != 3 or not _urgency_ordered(items):
+            _log(f"{cid}: nbc_error — {len(items)} items / ordering invalid (card keeps static)")
             return f"__NBC_ERROR__{cid}"
         return f"__NBC__{cid}__{json.dumps(briefing)}"
-    except Exception:
+    except Exception as exc:
+        _log(f"{cid}: nbc_error — {type(exc).__name__}: {exc} (card keeps static)")
         return f"__NBC_ERROR__{cid}"
 
 
