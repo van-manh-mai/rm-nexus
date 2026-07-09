@@ -228,3 +228,10 @@ added a Features-log entry (below) and updated `CLAUDE.md` when a module appeare
   hermetic, and real environment variables still take precedence (`override=False`). *Verified:* a
   throwaway `backend/.env` is picked up by the entry-point load; backend ruff + pytest 6/6 green.
   *Spec:* Constitution Principle II (zero-LLM floor), `rm_agent.py` fallback contract.
+
+## License
+
+Copyright (c) 2026 Van Mai. All rights reserved. See [`LICENSE`](LICENSE).
+
+All financial data is synthetic; company names are used illustratively only. No permission is
+granted to copy, modify, distribute, or use this work without the author's written consent.
