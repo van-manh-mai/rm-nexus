@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 
 BANK_NAME = "Aussie Bank"
 REGULATOR = "APRA"
@@ -25,6 +26,16 @@ DEFAULT_MODEL = "claude-haiku-4-5-20251001"
 
 # Urgency severity, highest first. Used to order template items and to validate ordering.
 URGENCY_ORDER = ["critical", "high", "medium", "low"]
+
+
+def _log(msg: str) -> None:
+    """One-line NBC generation trace to stderr — visible in the ``run.py`` terminal.
+
+    The narration boundary degrades silently to the static template (Principle II); this
+    trace makes *which path ran* observable without changing that behaviour. It is the only
+    place the otherwise-swallowed model-call failure becomes visible.
+    """
+    print(f"[nbc] {msg}", file=sys.stderr, flush=True)
 
 
 def _system_prompt() -> str:
@@ -56,12 +67,15 @@ class NBCAgent:
     def generate(self, client: dict) -> str:
         """Return an NBC briefing as a JSON string. Never raises; degrades to a
         deterministic template on missing key or any model-call failure."""
+        cid = client.get("id", "unknown")
         api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
+            _log(f"{cid}: fallback — no ANTHROPIC_API_KEY (static template)")
             return self._template(client)
         try:
             return self._call_model(client, api_key)
-        except Exception:
+        except Exception as exc:
+            _log(f"{cid}: fallback — {type(exc).__name__}: {exc} (static template)")
             return self._template(client)
 
     def _call_model(self, client: dict, api_key: str) -> str:
@@ -80,6 +94,10 @@ class NBCAgent:
             system=_system_prompt(),
             messages=[{"role": "user", "content": prompt}],
         )
+        cid = client.get("id", "unknown")
+        usage = getattr(response, "usage", None)
+        toks = f"in={usage.input_tokens} out={usage.output_tokens}" if usage else "usage=?"
+        _log(f"{cid}: LLM ok — model={self.model} {toks} tokens")
         return "".join(block.text for block in response.content if block.type == "text")
 
     def _template(self, client: dict) -> str:

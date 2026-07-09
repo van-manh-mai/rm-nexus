@@ -220,3 +220,11 @@ added a Features-log entry (below) and updated `CLAUDE.md` when a module appeare
   a `predev`/`prebuild` copy step serves it from `public/` while `docs/` stays the single source.
   README gains a Quickstart + documentation pointer. *Verified:* `tsc` + ESLint + `next build`
   clean; served doc + nav link confirmed in-browser; e2e 5/5 green. Delivered by PR under Stage B.
+- **`.env` loading wired up.** `backend/run.py` now calls `load_dotenv()` against `backend/.env`
+  at startup (resolved by path so it works from the repo-root launch command), and `python-dotenv`
+  is promoted to an explicit backend dependency. Closes the gap where `.env.example` documented
+  `backend/.env` as the mechanism but nothing read it — previously the key had to be exported into
+  the shell. The load lives in the entry point only (not `server.py`) so the key-free tests stay
+  hermetic, and real environment variables still take precedence (`override=False`). *Verified:* a
+  throwaway `backend/.env` is picked up by the entry-point load; backend ruff + pytest 6/6 green.
+  *Spec:* Constitution Principle II (zero-LLM floor), `rm_agent.py` fallback contract.
